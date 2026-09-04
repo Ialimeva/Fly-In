@@ -13,7 +13,6 @@ class Parser:
 
     def validate_map(self) -> None:
         self.get_map_file()
-        
         try:
             with open(self.map_path, "r") as f:
                 print(f.read())
