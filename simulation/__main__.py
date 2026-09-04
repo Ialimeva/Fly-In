@@ -1,9 +1,13 @@
+from parser import Parser
+
+
 def main() -> None:
     try:
-        print("Running")
+        parser: Parser = Parser()
+        parser.validate_map()
     except Exception as e:
         print(f"An error occured: {e}")
-        raise SystemExit
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":
