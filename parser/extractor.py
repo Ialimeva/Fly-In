@@ -1,9 +1,9 @@
-from .get_map_path import GetMap
+from .get_map_path import GetMapPath
 
 
 class Parser:
     def __init__(self) -> None:
-        self.map_getter: GetMap = GetMap()
+        self.map_getter: GetMapPath = GetMapPath()
         self.map_path: str
 
     def get_map_file(self) -> str:
