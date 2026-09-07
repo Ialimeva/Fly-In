@@ -18,7 +18,7 @@ class GetMap:
                 "medium",
                 "hard",
                 "challenger",
-                "My own map"
+                "my own map"
             ]
         ).ask()
 
@@ -26,7 +26,7 @@ class GetMap:
 
     def get_map_path(self) -> str:
         level: str = self.get_level()
-        if level == "My own map":
+        if level == "my own map":
             self.map_path = questionary.path(
                 "What's the path of your custom map?\n" + 
                 "Click on Tab for navigation"

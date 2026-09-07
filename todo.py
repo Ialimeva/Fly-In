@@ -1,3 +1,5 @@
 # TODO: EVERYTHING IN POO
 
-# TODO: Makefile & Parsing
+# TODO: Makefile
+# TODO: Parsing map data
+# TODO: Algo research and choice
