@@ -1,4 +1,4 @@
-from .get_map import GetMap
+from .get_map_path import GetMap
 
 
 class Parser:

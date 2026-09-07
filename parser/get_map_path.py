@@ -6,7 +6,7 @@ except ModuleNotFoundError:
     raise SystemExit(1)
 
 
-class GetMap:
+class GetMapPath:
     def __init__(self):
         self.map_path: str
 
