@@ -9,6 +9,8 @@ def main() -> None:
         parser: Parser = Parser()
         map: Map = parser.validate_map()
         graph: MakeGraph = MakeGraph(map)
+        for k, v in graph.all_node_neighbors().items():
+            print(k, v)
     except Exception as e:
         print(f"An error occured: {e}")
         raise SystemExit(1)
