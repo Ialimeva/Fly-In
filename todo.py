@@ -1,5 +1,5 @@
 # TODO: EVERYTHING IN POO
 
 # TODO: Makefile
-# TODO: Parsing map data with verification
-# TODO: Algo research and choice
+# TODO: Apply graph theory and dijkstra
+# TODO: Parsing map verification

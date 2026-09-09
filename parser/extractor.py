@@ -1,17 +1,15 @@
 import re
-from pydantic import TypeAdapter
 from typing import Any
 from .get_map_path import GetMapPath
 from models import Map, Hub, Connection, MetaData
 
 
+# TODO: Check duplicate zones by name or coords
 class Parser:
     def __init__(self) -> None:
         self.map_getter: GetMapPath = GetMapPath()
         self.nb_drones: int = 0
-        self.start_hub: Hub = Hub()
-        self.end_hub: Hub = Hub()
-        self.hubs: list[Hub] = []
+        self.hubs: dict[str, Hub] = {}
         self.connections: list[Connection] = []
 
     def get_map_file(self) -> str:
@@ -24,8 +22,8 @@ class Parser:
         try:
             with open(self.map_path, "r") as f:
                 self.file_content = [
-                    l for l in f.read().split("\n")
-                    if l and l[0] != '#'
+                    line for line in f.read().split("\n")
+                    if line and line[0] != '#'
                 ]
             for i, line in enumerate(self.file_content):
                 regex: dict[str, tuple[str, ...]] = {
@@ -62,10 +60,9 @@ class Parser:
                         for d in datas:
                             key, value = d.split("=", 1)
                             metadata[key] = value
-                            elements["metadata"] = metadata
-                    else:
-                        elements["metadata"] = MetaData()
-                    self.start_hub = Hub(**elements)
+                        elements["metadata"] = MetaData(**metadata)
+                    hub: Hub = Hub(**elements)
+                    self.hubs[hub.name] = hub
 
                 elif i > 0 and (match := re.match("".join(regex["end_hub"]), line)):
                     elements: dict[str, Any] = match.groupdict()
@@ -75,10 +72,9 @@ class Parser:
                         for d in datas:
                             key, value = d.split("=", 1)
                             metadata[key] = value
-                            elements["metadata"] = metadata
-                    else:
-                        elements["metadata"] = MetaData()
-                    self.end_hub = Hub(**elements)
+                        elements["metadata"] = MetaData(**metadata)
+                    hub: Hub = Hub(**elements)
+                    self.hubs[hub.name] = hub
 
                 elif i > 0 and (match := re.match("".join(regex["hub"]), line)):
                     elements: dict[str, Any] = match.groupdict()
@@ -88,10 +84,9 @@ class Parser:
                         for d in datas:
                             key, value = d.split("=", 1)
                             metadata[key] = value
-                            elements["metadata"] = metadata
-                    else:
-                        elements["metadata"] = MetaData()
-                    self.hubs.append(Hub(**elements))
+                        elements["metadata"] = MetaData(**metadata)
+                    hub: Hub = Hub(**elements)
+                    self.hubs[hub.name] = hub
 
                 elif i > 0 and (match := re.match("".join(regex["connection"]), line)):
                     elements: dict[str, Any] = match.groupdict()
@@ -104,8 +99,6 @@ class Parser:
 
             return Map(
                 nb_drones=self.nb_drones,
-                start_hub=self.start_hub,
-                end_hub=self.end_hub,
                 hubs=self.hubs,
                 connections=self.connections
             )
