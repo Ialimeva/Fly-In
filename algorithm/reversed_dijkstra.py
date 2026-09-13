@@ -1,7 +1,7 @@
 from models import Map, Hub
 from .graph import MakeGraph
 
-
+# TODO: Arrange code for better code quality
 class ReversedDijkstra:
     def __init__(self, map: Map, graph: MakeGraph) -> None:
         self.map: Map = map
