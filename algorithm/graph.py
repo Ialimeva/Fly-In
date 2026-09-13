@@ -18,11 +18,10 @@ class MakeGraph:
 
         return self.neighbors
 
-    def get_reversed_graph(self) -> dict[str, list[str]]:
-        for node in self.nodes:
-            for edge in self.edges:
-                if edge.name2 == node:
-                    self.neighbors[node].add(edge.name1)
-                    self.neighbors[edge.name1].add(node)
-
-        return self.neighbors
+    def get_node_weight(self, zone: str) -> int|float:
+        if zone in ("normal", "priority"):
+            return 1
+        elif zone == "restricted":
+            return 2
+        else:
+            return float("inf")

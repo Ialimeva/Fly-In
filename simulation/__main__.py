@@ -13,10 +13,7 @@ def main() -> None:
         dijkstra: ReversedDijkstra = ReversedDijkstra(map, graph)
         for k, v in graph.get_graph().items():
             print(k, v)
-        print()
-        for k, v in graph.get_reversed_graph().items():
-            print(k, v)
-        dijkstra.nodes_distance_from_goal()
+        print(dijkstra.nodes_distance_from_goal())
     except Exception as e:
         print(f"An error occured: {e}")
         raise SystemExit(1)

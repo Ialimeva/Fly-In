@@ -18,24 +18,16 @@ class ReversedDijkstra:
                     self.start_hub: str = k
                 self.nodes_distances[k] = float("inf")
 
-    def get_node_weight(self, zone: str) -> int|float:
-        if zone in ("normal", "priority"):
-            return 1
-        elif zone == "restricted":
-            return 2
-        else:
-            return float("inf")
-
     def nodes_distance_from_goal(self) -> dict[str, int|float]:
         self.set_starting_distance()
         nodes: dict[str, Hub] = self.graph.nodes
-        edges: dict[str, list[str]] = self.graph.get_reversed_graph()
+        edges: dict[str, list[str]] = self.graph.get_graph()
         visited: set[str] = set()
         current_node: str = self.end_hub
         for _ in range(len(nodes)):
             if current_node not in visited:
                 for neighbor in edges[current_node]:
-                    weight: int|float = self.get_node_weight(
+                    weight: int|float = self.graph.get_node_weight(
                         nodes[neighbor].metadata.zone
                     )
                     final_weight: int = self.nodes_distances[current_node] + weight
