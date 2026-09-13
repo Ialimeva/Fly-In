@@ -29,18 +29,18 @@ class Parser:
                 regex: dict[str, tuple[str, ...]] = {
                     "nb_drones": (r"^nb_drones:\s+(?P<nb_drones>\d+)$"),
                     "start_hub": (
-                        r"start_hub:\s+(?P<name>[^\s-]+)",
-                        r"\s+(?P<x>\d+)\s+(?P<y>\d+)",
+                        r"(?P<type>start_hub):\s+(?P<name>[^\s-]+)",
+                        r"\s+(?P<x>(-)?\d+)\s+(?P<y>(-)?\d+)",
                         r"(\s+\[(?P<metadata>[^\]]+)\])?"
                     ),
                     "end_hub": (
-                        r"end_hub:\s+(?P<name>[^-\s]+)",
-                        r"\s+(?P<x>\d+)\s+(?P<y>\d+)",
+                        r"(?P<type>end_hub):\s+(?P<name>[^-\s]+)",
+                        r"\s+(?P<x>(-)?\d+)\s+(?P<y>(-)?\d+)",
                         r"(\s+\[(?P<metadata>[^\]]+)\])?"
                     ),
                     "hub": (
-                        r"hub:\s+(?P<name>[^-\s]+)",
-                        r"\s+(?P<x>\d+)\s+(?P<y>\d+)",
+                        r"(?P<type>hub):\s+(?P<name>[^-\s]+)",
+                        r"\s+(?P<x>(-)?\d+)\s+(?P<y>(-)?\d+)",
                         r"(\s+\[(?P<metadata>[^\]]+)\])?"
                     ),
                     "connection": (

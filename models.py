@@ -11,6 +11,7 @@ class MetaData(BaseModel, extra="forbid"):
 
 
 class Hub(BaseModel, extra="forbid"):
+    type: str = "hub"
     name: str = ""
     x: int = 0
     y: int = 0
