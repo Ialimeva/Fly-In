@@ -26,14 +26,13 @@ class ReversedDijkstra:
         else:
             return float("inf")
 
-    def nodes_distance_from_goal(self) -> None:
+    def nodes_distance_from_goal(self) -> dict[str, int|float]:
         self.set_starting_distance()
         nodes: dict[str, Hub] = self.graph.nodes
         edges: dict[str, list[str]] = self.graph.get_reversed_graph()
-        visited: list[str] = []
+        visited: set[str] = set()
         current_node: str = self.end_hub
-        print(len(nodes))
-        while self.start_hub not in visited:
+        for _ in range(len(nodes)):
             if current_node not in visited:
                 for neighbor in edges[current_node]:
                     weight: int|float = self.get_node_weight(
@@ -43,8 +42,10 @@ class ReversedDijkstra:
                     estimated_weight: int|float = self.nodes_distances[neighbor]
                     if final_weight < estimated_weight:
                         self.nodes_distances[neighbor] = final_weight
-                visited.append(current_node)
-                # print(len(visited), visited)
-                current_node = min(self.nodes_distances, key=lambda k: self.nodes_distances[k] if k not in visited else float("inf"))
+                visited.add(current_node)
+                current_node = min(
+                    self.nodes_distances,
+                    key=lambda k: float("inf") if k in visited else self.nodes_distances.get(k)
+                )
 
-        print(self.nodes_distances)
+        return self.nodes_distances

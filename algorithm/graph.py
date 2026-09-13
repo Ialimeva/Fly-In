@@ -3,31 +3,26 @@ from models import Map, Hub, Connection
 
 class MakeGraph:
     def __init__(self, map: Map) -> None:
-        self.nodes: dict[str. Hub] = map.hubs
+        self.nodes: dict[str, Hub] = map.hubs
         self.edges: list[Connection] = map.connections
+        self.neighbors: dict[str, set[str]] = {
+            k: set() for k in self.nodes
+        }
 
     def get_graph(self) -> dict[str, list[str]]:
-        neighbors: dict[str, list[str]] = {}
         for node in self.nodes:
-            node_neighbors: list[str] = []
             for edge in self.edges:
                 if edge.name1 == node:
-                    node_neighbors.append(
-                        edge.name2
-                    )
-            neighbors[node] = node_neighbors
+                    self.neighbors[node].add(edge.name2)
+                    self.neighbors[edge.name2].add(node)
 
-        return neighbors
+        return self.neighbors
 
     def get_reversed_graph(self) -> dict[str, list[str]]:
-        neighbors: dict[str, list[str]] = {}
         for node in self.nodes:
-            node_neighbors: list[str] = []
             for edge in self.edges:
                 if edge.name2 == node:
-                    node_neighbors.append(
-                        edge.name1
-                    )
-            neighbors[node] = node_neighbors
+                    self.neighbors[node].add(edge.name1)
+                    self.neighbors[edge.name1].add(node)
 
-        return neighbors
+        return self.neighbors
