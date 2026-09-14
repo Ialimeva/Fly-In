@@ -1,9 +1,4 @@
-# TODO: Ask Teddy about how to not add try except
-try:
-    import questionary
-except ModuleNotFoundError:
-    print("Questionary not installed.")
-    raise SystemExit(1)
+import questionary
 
 
 class GetMapPath:

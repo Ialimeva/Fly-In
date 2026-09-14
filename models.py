@@ -1,7 +1,4 @@
-try:
-    from pydantic import BaseModel
-except ModuleNotFoundError as e:
-    raise ModuleNotFoundError(e)
+from pydantic import BaseModel
 
 
 class MetaData(BaseModel, extra="forbid"):
