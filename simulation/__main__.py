@@ -1,19 +1,10 @@
-import re
-from parser import Parser
-from models import Map, Hub, Connection
-from algorithm import MakeGraph, ReversedDijkstra
+from .model import Simulation
 
 
 def main() -> None:
     try:
-        parser: Parser = Parser()
-        map: Map = parser.validate_map()
-        print(map.connections)
-        graph: MakeGraph = MakeGraph(map)
-        dijkstra: ReversedDijkstra = ReversedDijkstra(map, graph)
-        for k, v in graph.get_graph().items():
-            print(k, v)
-        print(dijkstra.nodes_distance_from_goal())
+        simulation: Simulation = Simulation()
+        simulation.run()
     except Exception as e:
         print(f"An error occured: {e}")
         raise SystemExit(1)

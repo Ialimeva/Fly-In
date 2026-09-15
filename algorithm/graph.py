@@ -9,7 +9,7 @@ class MakeGraph:
             k: set() for k in self.nodes
         }
 
-    def get_graph(self) -> dict[str, list[str]]:
+    def get_graph(self) -> dict[str, set[str]]:
         for node in self.nodes:
             for edge in self.edges:
                 if edge.name1 == node:
