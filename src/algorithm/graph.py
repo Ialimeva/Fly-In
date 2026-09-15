@@ -1,4 +1,4 @@
-from models import Map, Hub, Connection
+from ..models import Map, Hub, Connection
 
 
 class MakeGraph:

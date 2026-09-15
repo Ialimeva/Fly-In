@@ -1,7 +1,7 @@
 import re
 from typing import Any
 from .get_map_path import GetMapPath
-from models import Map, Hub, Connection, MetaData
+from ..models import Map, Hub, Connection, MetaData
 
 
 # TODO: Check duplicate zones by name or coords

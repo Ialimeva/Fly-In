@@ -21,6 +21,7 @@ class GetMapPath:
 
     def get_map_path(self) -> str:
         level: str = self.get_level()
+        dir: str = "src/maps/"
         if level == "my own map":
             self.map_path = questionary.path(
                 "What's the path of your custom map?" + 
@@ -28,7 +29,7 @@ class GetMapPath:
             ).ask()
 
         elif level == "easy":
-            self.map_path = "maps/" + level + "/" + questionary.select(
+            self.map_path = dir + level + "/" + questionary.select(
                 "Choose map:",
                 choices=[
                     "01_linear_path.txt",
@@ -38,7 +39,7 @@ class GetMapPath:
             ).ask()
 
         elif level == "medium":
-            self.map_path = "maps/" + level + "/" + questionary.select(
+            self.map_path = dir + level + "/" + questionary.select(
                 "Choose map:",
                 choices=[
                     "01_dead_end_trap.txt",
@@ -48,7 +49,7 @@ class GetMapPath:
             ).ask()
 
         elif level == "hard":
-            self.map_path = "maps/" + level + "/" + questionary.select(
+            self.map_path = dir + level + "/" + questionary.select(
                 "Choose map:",
                 choices=[
                     "01_maze_nightmare.txt",
@@ -58,7 +59,7 @@ class GetMapPath:
             ).ask()
 
         elif level == "challenger":
-            self.map_path = "maps/" + level + "/" + "01_the_impossible_dream.txt"
+            self.map_path = dir + level + "/" + "01_the_impossible_dream.txt"
 
         else:
             raise ValueError("Map level does not exist")

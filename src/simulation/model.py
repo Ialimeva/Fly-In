@@ -1,6 +1,6 @@
-from models import Map
-from parser import Parser
-from algorithm import MakeGraph, Dijkstra
+from ..models import Map
+from ..parser import Parser
+from ..algorithm import MakeGraph, Dijkstra
 
 
 class Simulation:

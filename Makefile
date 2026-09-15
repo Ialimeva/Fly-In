@@ -1,6 +1,6 @@
 UV := uv
 PYTHON := python
-FLY_IN := simulation
+FLY_IN := src
 DEBUGGER := pdb
 
 run: install

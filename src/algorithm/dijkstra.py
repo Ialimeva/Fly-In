@@ -1,4 +1,4 @@
-from models import Hub
+from ..models import Hub
 from .graph import MakeGraph
 
 # TODO: Arrange code for better code quality
