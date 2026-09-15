@@ -11,4 +11,6 @@ class Simulation:
         self.dijkstra: Dijkstra = Dijkstra(self.graph)
 
     def run(self) -> None:
+        print(self.graph.neighbors)
+        print("\n" * 2)
         print(self.dijkstra.nodes_distance_from_goal())
