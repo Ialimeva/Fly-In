@@ -10,13 +10,11 @@ class Dijkstra:
         self.nodes_distances: dict[str, int | float] = {}
 
     def set_starting_distance(self) -> None:
-        for k, v in self.nodes.items():
-            if v.type == "end_hub":
+        self.start_hub, self.end_hub = self.graph.get_endpoints()
+        for k in self.nodes:
+            if k == self.end_hub:
                 self.nodes_distances[k] = 0
-                self.end_hub: str = k
             else:
-                if v.type == "start_hub":
-                    self.start_hub: str = k
                 self.nodes_distances[k] = float("inf")
 
     def nodes_distance_from_goal(self) -> dict[str, int|float]:

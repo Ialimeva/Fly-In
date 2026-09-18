@@ -8,6 +8,20 @@ class MakeGraph:
         self.neighbors: dict[str, set[str]] = {
             k: set() for k in self.nodes
         }
+        self.link_capacity: dict[str, int] = {
+            c.name1 + "-" + c.name2: c.max_link_capacity
+            for c in self.edges
+        }
+
+    def get_endpoints(self) -> None:
+        for k, v in self.nodes.items():
+            if v.type == "start_hub":
+                self.start_hub: str = k
+            elif v.type == "end_hub":
+                self.end_hub: str = k
+            continue
+
+        return (self.start_hub, self.end_hub)
 
     def get_graph(self) -> dict[str, set[str]]:
         for node in self.nodes:
@@ -25,3 +39,4 @@ class MakeGraph:
             return 2
         else:
             return float("inf")
+
