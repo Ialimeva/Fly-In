@@ -22,7 +22,7 @@ class GetMapPath:
     def get_map_path(self) -> str:
         level: str = self.get_level()
         dir: str = "src/maps/"
-        if level == "my own map":
+        if level == "custom map":
             self.map_path = questionary.path(
                 "What's the path of your custom map?" + 
                 " (Use Tab for anvigation)"
