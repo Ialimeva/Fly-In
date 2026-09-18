@@ -40,3 +40,24 @@ class MakeGraph:
         else:
             return float("inf")
 
+    def get_link_capacity(self, name1: str, name2: str) -> int:
+        conn: str = name1 + "-" + name2
+        if self.link_capacity[conn]:
+            return self.link_capacity[conn]
+        raise Exception("Link does not exist")
+
+    def get_zone_capacity(self, zone: str) -> int:
+        return self.nodes[zone].metadata.max_drones
+
+    def get_node_coords(self, node: str) -> tuple[int, int]:
+        return (
+            self.nodes[node].x,
+            self.nodes[node].y,
+        )
+
+    def goal_manhattan(self, node1: str) -> int:
+        _, end_hub = self.get_endpoints()
+        x1, y1 = self.get_node_coords(node1)
+        x2, y2 = self.get_node_coords(end_hub)
+
+        return abs(x1 - x2) + abs(y1 - y2)
