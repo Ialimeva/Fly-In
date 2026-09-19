@@ -26,17 +26,9 @@ class Astar:
             return float("inf")
 
     def get_g(self, node: str, neighbor: str) -> float:
-        link_capacity: int = self.graph.get_link_capacity(
-            node,
-            neighbor
-        )
-        zone_capacity: int = self.graph.get_zone_capacity(neighbor)
         zone_type: float = self.get_zone_note(neighbor)
         coords_distance: int = self.graph.goal_manhattan(neighbor)
-
         return (
-            link_capacity +
-            zone_capacity +
             zone_type +
             coords_distance
         )
@@ -57,22 +49,22 @@ class Astar:
         path: list[tuple[int, str, str]] = []
 
         while current_node != self.end_hub:
-            if current_node not in visited:
-                choices: dict[str, float] = {}
-                for neigbor in self.neighbors[current_node]:
-                    if neigbor not in visited:
-                        f: float = self.get_f(current_node, neigbor)
-                        choices[neigbor] = f
-                print(choices)
-                visited.add(current_node)
-                parent_node: str = current_node
-                current_node = min(
-                    choices,
-                    key=lambda k: (
-                        choices[k] if k not in visited
-                        else float("inf")
-                    )
+            choices: dict[str, float] = {}
+            for neigbor in self.neighbors[current_node]:
+                if neigbor not in visited:
+                    f: float = self.get_f(current_node, neigbor)
+                    choices[neigbor] = f
+                else:
+                    continue
+            visited.add(current_node)
+            parent_node: str = current_node
+            current_node = min(
+                choices,
+                key=lambda k: (
+                    choices[k] if k not in visited
+                    else float("inf")
                 )
-                path.append((drone, parent_node, current_node))
+            )
+            path.append((drone, parent_node, current_node))
 
         return path
