@@ -15,14 +15,11 @@ class Simulation:
         )
 
     def run(self) -> None:
-        # print("\n" * 2)
-        # print(self.graph.neighbors)
-        print(self.dijkstra.nodes_distance_from_goal())
-        print("\n" * 2)
+        # for i, p in enumerate(path):
         # for i in range(self.map.nb_drones):
         path = self.astar.path_to_goal(1)
-        for i, p in enumerate(path):
-            if i == len(path) - 1:
-                print(f"{p[1]} -> {p[2]}")
-            else:
-                print(p[1], flush=True, end=" -> ")
+        print(path)
+            # if i == len(path) - 1:
+            #     print(f"{p[1]} -> {p[2]}")
+            # else:
+            #     print(p[1], flush=True, end=" -> ")

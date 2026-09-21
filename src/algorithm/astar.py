@@ -1,5 +1,6 @@
 from ..models import Hub
 from .graph import MakeGraph
+from typing import Any
 
 
 class Astar:
@@ -42,29 +43,51 @@ class Astar:
 
         return g + h
 
+    def get_choice(self, current_node: str, visited: set[str], constraint: str | None) -> str | None:
+        choices: dict[str, float] = {}
+        for neighbor in self.neighbors[current_node]:
+            if neighbor not in visited and neighbor != constraint:
+                f: float = self.get_f(current_node, neighbor)
+                choices[neighbor] = f
+
+        return min(
+            choices,
+            key=lambda k: (
+                choices[k] if k not in visited
+                and k != constraint
+                else float("inf")
+            )
+        )
+
+
     def path_to_goal(self, drone: int) -> list[tuple[int, str, str]]:
         turn: int = 0
         visited: set[str] = set()
         current_node: str = self.start_hub
-        path: list[tuple[int, str, str]] = []
+        path: list[tuple[Any]] = []
+        constrains: dict[int, list[dict[str, Any]]] = {}
 
         while current_node != self.end_hub:
-            choices: dict[str, float] = {}
-            for neigbor in self.neighbors[current_node]:
-                if neigbor not in visited:
-                    f: float = self.get_f(current_node, neigbor)
-                    choices[neigbor] = f
-                else:
-                    continue
+            turn += 1
+            choice: str = self.get_choice(current_node, visited, None)
             visited.add(current_node)
             parent_node: str = current_node
-            current_node = min(
-                choices,
-                key=lambda k: (
-                    choices[k] if k not in visited
-                    else float("inf")
-                )
-            )
-            path.append((drone, parent_node, current_node))
-
-        return path
+            current_node = choice
+            if self.nodes[current_node].metadata.zone == "restricted":
+                if turn not in constrains:
+                    constrains[turn] =  []
+                constrains[turn].append({
+                    "D": drone,
+                    "source": parent_node,
+                    "target": parent_node + "-" + current_node,
+                })
+                parent_node = parent_node + "-" + current_node
+                turn += 1
+            if turn not in constrains:
+                constrains[turn] = []
+            constrains[turn].append({
+                "D": drone,
+                "source": parent_node,
+                "target": current_node,
+            })            
+        return constrains
