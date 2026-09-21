@@ -10,6 +10,7 @@ class Astar:
         graph: MakeGraph
     ) -> None:
         self.node_distances: dict[str, int] = node_distances
+        print(self.node_distances)
         self.graph: MakeGraph = graph
         self.nodes: dict[str, Hub] = self.graph.nodes
         self.start_hub, self.end_hub = self.graph.get_endpoints()
@@ -43,33 +44,62 @@ class Astar:
 
         return g + h
 
-    def get_choice(self, current_node: str, visited: set[str], constraint: str | None) -> str | None:
-        choices: dict[str, float] = {}
-        for neighbor in self.neighbors[current_node]:
-            if neighbor not in visited and neighbor != constraint:
-                f: float = self.get_f(current_node, neighbor)
-                choices[neighbor] = f
-
+    def min_node(self, choices: dict[str, float]) -> str:
         return min(
             choices,
-            key=lambda k: (
-                choices[k] if k not in visited
-                and k != constraint
-                else float("inf")
-            )
+            key=lambda k: choices[k],
+            default=None
         )
 
 
-    def path_to_goal(self, drone: int) -> list[tuple[int, str, str]]:
+    def get_choice(
+        self, 
+        turn: int,
+        current_node: str,
+        visited: set[str],
+        constraint: dict[int, list[dict[str, Any]]] | None
+    ) -> str | None:
+        previous_choices: list[str] = []
+
+        if constraint and turn in constraint:
+            for c in constraint[turn]:
+                if "-" in c["target"]:
+                    _, current = c["target"].split("-")
+                    previous_choices.append(current)
+                else:
+                    previous_choices.append(c["target"])
+        choices: dict[str, float] = {}
+        for neighbor in self.neighbors[current_node]:
+            if neighbor not in visited:
+                f: float = self.get_f(current_node, neighbor)
+                choices[neighbor] = f
+
+        choice: str = self.min_node(choices)
+        if choice in previous_choices:
+            second_choice: str | None = None
+            for k, v in choices.items():
+                if v == choices[choice] and k != choice:
+                    second_choice = k
+            return second_choice
+
+        return choice
+
+
+    def path_to_goal(
+        self,
+        drone: int,
+        constrains: dict[int, list[dict[str, Any]]]
+    ) -> list[tuple[int, str, str]]:
         turn: int = 0
         visited: set[str] = set()
         current_node: str = self.start_hub
-        path: list[tuple[Any]] = []
-        constrains: dict[int, list[dict[str, Any]]] = {}
 
         while current_node != self.end_hub:
-            turn += 1
-            choice: str = self.get_choice(current_node, visited, None)
+            choice: str | None = None
+            while choice is None:
+                turn += 1
+                choice = self.get_choice(turn, current_node, visited, constrains)
+
             visited.add(current_node)
             parent_node: str = current_node
             current_node = choice
