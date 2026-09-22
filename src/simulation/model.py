@@ -20,5 +20,5 @@ class Simulation:
         mapf: dict[int, list[dict[str, Any]]] = self.mapf.prioritized_planning(
             self.map.nb_drones
         )
-        # for key, value in mapf.items():
-        #     print(f"Turn: {key} -> {value}")
+        for key, value in mapf.items():
+            print(f"Turn: {key} -> {value}")

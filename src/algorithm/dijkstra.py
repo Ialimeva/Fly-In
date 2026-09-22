@@ -19,25 +19,28 @@ class Dijkstra:
 
     def nodes_distance_from_goal(self) -> dict[str, int|float]:
         self.set_starting_distance()
-        visited: set[str] = set()
-        current_node: str = self.end_hub
-        for _ in range(len(self.nodes)):
-            if current_node not in visited:
-                for neighbor in self.neighbors[current_node]:
-                    weight: int | float = self.graph.get_node_weight(
-                        self.nodes[neighbor].metadata.zone
-                    )
-                    final_weight: int = self.nodes_distances[current_node] + weight
-                    estimated_weight: int | float = self.nodes_distances[neighbor]
-                    if final_weight < estimated_weight:
-                        self.nodes_distances[neighbor] = final_weight
-                visited.add(current_node)
-                current_node = min(
-                    self.nodes_distances,
-                    key=lambda k: (
-                        float("inf") if k in visited
-                        else self.nodes_distances.get(k)
-                    )
-                )
+        reachable: list[str] = []
+        explored: set[str] = set()
+        reachable.append(self.end_hub)
+
+        while self.start_hub not in explored:
+            current_node: str = reachable.pop(0)
+            print(current_node, self.graph.get_node_weight(self.nodes[current_node].metadata.zone))
+
+            for neighbor in self.neighbors[current_node]:
+                if neighbor in explored:
+                    continue
+                reachable.append(neighbor)
+
+            for node in reachable:
+                zone: str = self.nodes[node].metadata.zone
+                weight: int = self.graph.get_node_weight(zone) + self.nodes_distances[current_node]
+                estimated_weight: int = self.nodes_distances[node]
+
+                if weight < estimated_weight:
+                    self.nodes_distances[node] = weight
+
+            explored.add(current_node)
+            reachable = sorted(reachable, key=lambda k: self.nodes_distances[k])
 
         return self.nodes_distances

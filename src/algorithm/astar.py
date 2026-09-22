@@ -27,62 +27,44 @@ class Astar:
         else:
             return float("inf")
 
-    def get_g(self, node: str, neighbor: str) -> float:
-        zone_type: float = self.get_zone_note(neighbor)
-        coords_distance: int = self.graph.goal_manhattan(neighbor)
-        return (
-            zone_type +
-            coords_distance
-        )
+    def get_g(self, neighbor: str) -> float:
+        zone_score: float = self.get_zone_note(neighbor)
+        return zone_score
 
     def get_h(self, node: str) -> int:
         return self.node_distances[node]
 
-    def get_f(self, current_node: str, neighbor: str) -> float:
-        g: float = self.get_g(current_node, neighbor)
+    def get_f(self, neighbor: str) -> float:
+        g: float = self.get_g(neighbor)
         h: int = self.get_h(neighbor)
 
         return g + h
 
-    def min_node(self, choices: dict[str, float]) -> str:
-        return min(
-            choices,
-            key=lambda k: choices[k],
-            default=None
-        )
-
-
-    def get_choice(
-        self, 
+    def pick_node(
+        self,
         turn: int,
-        current_node: str,
-        visited: set[str],
-        constraint: dict[int, list[dict[str, Any]]] | None
-    ) -> str | None:
-        previous_choices: list[str] = []
+        reachable: list[str],
+        explored: set[str],
+        constrains: dict[int, dict[str, Any]]
+    ) -> str:
+        occupied: set[str] = set()
 
-        if constraint and turn in constraint:
-            for c in constraint[turn]:
+        if constrains and turn in constrains:
+            for c in constrains[turn]:
                 if "-" in c["target"]:
-                    _, current = c["target"].split("-")
-                    previous_choices.append(current)
+                    _, target = c["target"].split("-")
                 else:
-                    previous_choices.append(c["target"])
-        choices: dict[str, float] = {}
-        for neighbor in self.neighbors[current_node]:
-            if neighbor not in visited:
-                f: float = self.get_f(current_node, neighbor)
-                choices[neighbor] = f
+                    target = c["target"]
 
-        choice: str = self.min_node(choices)
-        if choice in previous_choices:
-            second_choice: str | None = None
-            for k, v in choices.items():
-                if v == choices[choice] and k != choice:
-                    second_choice = k
-            return second_choice
+            occupied.add(target)
+        
+        for node in reachable:
+            if node in occupied or node in explored:
+                continue
+            reachable.remove(node)
+            return node
 
-        return choice
+        return None
 
 
     def path_to_goal(
@@ -90,34 +72,55 @@ class Astar:
         drone: int,
         constrains: dict[int, list[dict[str, Any]]]
     ) -> list[tuple[int, str, str]]:
-        turn: int = 0
-        visited: set[str] = set()
-        current_node: str = self.start_hub
+        turn: int = 1
+        reachable: list[str] = []
+        explored: set[str] = set()
+        reachable.append(self.start_hub)
+        score: dict[str, int] = {}
 
-        while current_node != self.end_hub:
-            choice: str | None = None
-            while choice is None:
+        while self.end_hub not in explored:
+            current_node = self.pick_node(turn, reachable, explored, constrains)
+
+            if current_node == self.start_hub:
+                for neighbor in self.neighbors[current_node]:
+                    if neighbor in explored:
+                        continue
+                    score[neighbor] = self.get_f(neighbor)
+                    reachable.append(neighbor)
+
+                explored.add(current_node)
+                reachable = sorted(reachable, key=lambda k: score[k])
+                continue
+                
+    
+            while current_node is None:
                 turn += 1
-                choice = self.get_choice(turn, current_node, visited, constrains)
+                current_node: str = self.pick_node(turn, reachable, explored, constrains)
 
-            visited.add(current_node)
-            parent_node: str = current_node
-            current_node = choice
             if self.nodes[current_node].metadata.zone == "restricted":
                 if turn not in constrains:
-                    constrains[turn] =  []
+                    constrains[turn] = []
                 constrains[turn].append({
                     "D": drone,
-                    "source": parent_node,
-                    "target": parent_node + "-" + current_node,
+                    "target": "conn" + "-" + current_node
                 })
-                parent_node = parent_node + "-" + current_node
                 turn += 1
+
             if turn not in constrains:
                 constrains[turn] = []
             constrains[turn].append({
                 "D": drone,
-                "source": parent_node,
-                "target": current_node,
-            })            
+                "target": current_node
+            })
+
+            for neighbor in self.neighbors[current_node]:
+                if neighbor in explored:
+                    continue
+                reachable.append(neighbor)
+                score[neighbor] = self.get_f(neighbor)
+
+            explored.add(current_node)
+            reachable = sorted(reachable, key=lambda k: score[k])
+            turn += 1
+
         return constrains
