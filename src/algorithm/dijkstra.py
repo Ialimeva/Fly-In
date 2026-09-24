@@ -1,5 +1,6 @@
 from ..models import Hub
 from .graph import MakeGraph
+from typing import Any
 
 # TODO: Arrange code for better code quality
 class Dijkstra:
@@ -7,7 +8,7 @@ class Dijkstra:
         self.graph: MakeGraph = graph
         self.nodes: dict[str, Hub] = self.graph.nodes
         self.neighbors: dict[str, Hub] = self.graph.get_graph()
-        self.nodes_distances: dict[str, int | float] = {}
+        self.nodes_distances: dict[str, Any] = {}
 
     def set_starting_distance(self) -> None:
         self.start_hub, self.end_hub = self.graph.get_endpoints()
@@ -25,7 +26,6 @@ class Dijkstra:
 
         while self.start_hub not in explored:
             current_node: str = reachable.pop(0)
-            print(current_node, self.graph.get_node_weight(self.nodes[current_node].metadata.zone))
 
             for neighbor in self.neighbors[current_node]:
                 if neighbor in explored:

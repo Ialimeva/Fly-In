@@ -24,4 +24,4 @@ class Connection(BaseModel, extra="forbid"):
 class Map(BaseModel, extra="forbid"):
     nb_drones: int = 0
     hubs: dict[str, Hub] = {}
-    connections: list[Connection] = []
+    connections: dict[str, Connection] = {}

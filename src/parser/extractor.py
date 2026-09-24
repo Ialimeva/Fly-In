@@ -10,7 +10,7 @@ class Parser:
         self.map_getter: GetMapPath = GetMapPath()
         self.nb_drones: int = 0
         self.hubs: dict[str, Hub] = {}
-        self.connections: list[Connection] = []
+        self.connections: dict[str, Connection] = {}
 
     def get_map_file(self) -> str:
         self.map_path = self.map_getter.get_map_path()
@@ -61,6 +61,7 @@ class Parser:
                             key, value = d.split("=", 1)
                             metadata[key] = value
                         elements["metadata"] = MetaData(**metadata)
+                        elements["metadata"].max_drones = int(self.nb_drones)
                     hub: Hub = Hub(**elements)
                     self.hubs[hub.name] = hub
 
@@ -73,6 +74,7 @@ class Parser:
                             key, value = d.split("=", 1)
                             metadata[key] = value
                         elements["metadata"] = MetaData(**metadata)
+                        elements["metadata"].max_drones = int(self.nb_drones)
                     hub: Hub = Hub(**elements)
                     self.hubs[hub.name] = hub
 
@@ -92,7 +94,8 @@ class Parser:
                     elements: dict[str, Any] = match.groupdict()
                     if elements["max_link_capacity"] is None:
                         elements.pop("max_link_capacity")
-                    self.connections.append(Connection(**elements))
+                    conn: Connection = Connection(**elements)
+                    self.connections[conn.name1 + "-" + conn.name2] = conn
 
                 else:
                     continue
