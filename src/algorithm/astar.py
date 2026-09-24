@@ -54,17 +54,24 @@ class Astar:
         if constrains and turn in constrains:
             for c in constrains[turn]:
                 target = c["target"]
-            if target not in occupied:
-                occupied[target] = 0
-            occupied[target] += 1
+                if target not in occupied:
+                    occupied[target] = 0
+                occupied[target] += 1
         
         for node in reachable:
+            edge: str | None = None
+            if parent_node:
+                edge = parent_node + "-" + node
             if node in explored:
                 continue
             if node in occupied:
                 zone_capacity: int = self.graph.zone_capacity[node] - occupied[node]
                 if zone_capacity < 1:
                     continue
+            # if edge in occupied:
+            #     lint_capacity: str = self.graph.link_capacity[edge] - occupied[edge]
+            #     if lint_capacity < 1:
+            #         continue
             reachable.remove(node)
             return node
 
