@@ -1,4 +1,4 @@
-from ..models import Hub
+from ..models import Hub, Connection
 from .graph import MakeGraph
 from typing import Any
 
@@ -10,27 +10,28 @@ class Astar:
         graph: MakeGraph
     ) -> None:
         self.node_distances: dict[str, int] = node_distances
-        print(self.node_distances)
         self.graph: MakeGraph = graph
         self.nodes: dict[str, Hub] = self.graph.nodes
-        self.edges: list[Connection] = self.graph.edges
+        self.edges: dict[str, Connection] = self.graph.edges
         self.start_hub, self.end_hub = self.graph.get_endpoints()
         self.neighbors: dict[str, set[str]] = self.graph.get_graph()
+        self.cost_so_far: dict[str, int] = {
+            k: 0 if k == self.start_hub else float("inf") 
+            for k in self.neighbors
+        }
 
     def get_zone_note(self, node: str) -> float:
         zone: str = self.nodes[node].metadata.zone
-        if zone == "normal":
+        if zone in ("normal", "restricted"):
             return 1
         elif zone == "priority":
             return 0.5
-        elif zone == "restricted":
-            return 2
         else:
             return float("inf")
 
-    def get_g(self, neighbor: str) -> float:
-        zone_score: float = self.get_zone_note(neighbor)
-        return zone_score
+    def get_g(self, current: str, neighbor: str) -> float:
+        g: int = self.cost_so_far[current] + self.get_zone_note(neighbor)
+        return g
 
     def get_h(self, node: str) -> int:
         return self.node_distances[node]
@@ -41,103 +42,29 @@ class Astar:
 
         return g + h
 
-    def pick_node(
-        self,
-        turn: int,
-        parent_node: str,
-        reachable: list[str],
-        explored: set[str],
-        constrains: dict[int, dict[str, Any]]
-    ) -> str:
-        occupied: dict[str, int] = {}
-
-        if constrains and turn in constrains:
-            for c in constrains[turn]:
-                target = c["target"]
-                if target not in occupied:
-                    occupied[target] = 0
-                occupied[target] += 1
-        
-        for node in reachable:
-            edge: str | None = None
-            if parent_node:
-                edge = parent_node + "-" + node
-            if node in explored:
-                continue
-            if node in occupied:
-                zone_capacity: int = self.graph.zone_capacity[node] - occupied[node]
-                if zone_capacity < 1:
-                    continue
-            # if edge in occupied:
-            #     lint_capacity: str = self.graph.link_capacity[edge] - occupied[edge]
-            #     if lint_capacity < 1:
-            #         continue
-            reachable.remove(node)
-            return node
-
-        return None
-
-
-    def path_to_goal(
-        self,
-        drone: int,
-        constrains: dict[int, list[dict[str, Any]]],
-    ) -> list[tuple[int, str, str]]:
-        turn: int = 0
-        parent_node: str | None = None
+    def path_to_goal(self) -> ...:
         reachable: list[str] = []
         explored: set[str] = set()
         reachable.append(self.start_hub)
-        score: dict[str, int] = {}
 
-        while self.end_hub not in explored:
-            current_node: str = self.pick_node(turn, parent_node, reachable, explored, constrains)
+        while reachable:
+            current: str = reachable.pop(0)
 
-            if current_node == self.start_hub:
-                for neighbor in self.neighbors[current_node]:
-                    if neighbor in explored:
-                        continue
-                    score[neighbor] = self.get_f(neighbor)
-                    reachable.append(neighbor)
-
-                parent_node = current_node
-                explored.add(current_node)
-                reachable = sorted(reachable, key=lambda k: score[k])
-                turn +=1
-                continue
-                
-            while current_node is None:
-                turn += 1
-                current_node = self.pick_node(turn, parent_node, reachable, explored, constrains)
-
-            if self.nodes[current_node].metadata.zone == "restricted":
-                if turn not in constrains:
-                    constrains[turn] = []
-                edge: str = parent_node + "-" + current_node
-                constrains[turn].append({
-                    "D": drone,
-                    "source": parent_node,
-                    "target": edge,
-                })
-                parent_node = edge
-                turn += 1
-
-            if turn not in constrains:
-                constrains[turn] = []
-            constrains[turn].append({
-                "D": drone,
-                "source": parent_node,
-                "target": current_node,
-            })
-
-            for neighbor in self.neighbors[current_node]:
+            for neighbor in self.neighbors[current]:
                 if neighbor in explored:
                     continue
                 reachable.append(neighbor)
-                score[neighbor] = self.get_f(neighbor)
 
-            parent_node = current_node
-            explored.add(current_node)
-            reachable = sorted(reachable, key=lambda k: score[k])
-            turn += 1
-        return constrains
+            for neighbor in reachable:
+                if "-" in neighbor:
+                    weight: int = self.cost_so_far[current] + 1
+                else:
+                    weight: int = self.get_g(current, neighbor)
+                estimated_weight: int = self.cost_so_far[neighbor]
+                if weight < estimated_weight:
+                    self.cost_so_far[neighbor] = weight
+
+            explored.add(current)
+            reachable = sorted(reachable, key=lambda k: self.cost_so_far[k])
+        
+        return self.cost_so_far

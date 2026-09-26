@@ -31,16 +31,24 @@ class MakeGraph:
         for node in self.nodes:
             for edge in self.edges:
                 if self.edges[edge].name1 == node:
-                    self.neighbors[node].add(self.edges[edge].name2)
-                    self.neighbors[self.edges[edge].name2].add(node)
+                    neighbor: str = self.edges[edge].name2
+                    if self.nodes[neighbor].metadata.zone == "restricted":
+                        edge: str = node + "-" + neighbor
+                        self.neighbors[node].add(edge)
+                        self.neighbors[neighbor].add(edge)
+                        if edge not in neighbor:
+                            self.neighbors[edge] = set()
+                        self.neighbors[edge].add(node)
+                        self.neighbors[edge].add(neighbor)
+                    else:
+                        self.neighbors[node].add(neighbor)
+                        self.neighbors[neighbor].add(node)
 
         return self.neighbors
 
     def get_node_weight(self, zone: str) -> int|float:
         if zone in ("normal", "priority"):
             return 1
-        elif zone == "restricted":
-            return 2
         else:
             return float("inf")
 

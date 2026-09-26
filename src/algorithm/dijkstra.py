@@ -7,12 +7,12 @@ class Dijkstra:
     def __init__(self, graph: MakeGraph) -> None:
         self.graph: MakeGraph = graph
         self.nodes: dict[str, Hub] = self.graph.nodes
-        self.neighbors: dict[str, Hub] = self.graph.get_graph()
+        self.neighbors: dict[str, set[str]] = self.graph.get_graph()
         self.nodes_distances: dict[str, Any] = {}
 
     def set_starting_distance(self) -> None:
         self.start_hub, self.end_hub = self.graph.get_endpoints()
-        for k in self.nodes:
+        for k in self.neighbors:
             if k == self.end_hub:
                 self.nodes_distances[k] = 0
             else:
@@ -24,7 +24,7 @@ class Dijkstra:
         explored: set[str] = set()
         reachable.append(self.end_hub)
 
-        while self.start_hub not in explored:
+        while reachable:
             current_node: str = reachable.pop(0)
 
             for neighbor in self.neighbors[current_node]:
@@ -33,8 +33,11 @@ class Dijkstra:
                 reachable.append(neighbor)
 
             for node in reachable:
-                zone: str = self.nodes[node].metadata.zone
-                weight: int = self.graph.get_node_weight(zone) + self.nodes_distances[current_node]
+                if "-" in node:
+                    weight: int = self.nodes_distances[current_node] + 1
+                else:
+                    zone: str = self.nodes[node].metadata.zone
+                    weight: int = self.nodes_distances[current_node] + 1
                 estimated_weight: int = self.nodes_distances[node]
 
                 if weight < estimated_weight:
