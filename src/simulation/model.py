@@ -43,7 +43,7 @@ class Simulation:
 
 
     def run(self) -> None:
-        joint_plan: dict[int, Any] = self.mapf.prioritized_planning(
+        joint_plan: dict[int, Any] = self.mapf.cooperative_astar(
             self.map.nb_drones
         )
         self.output_format(joint_plan)
