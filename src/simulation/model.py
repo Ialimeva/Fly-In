@@ -14,16 +14,11 @@ class Simulation:
             self.dijkstra.nodes_distance_from_goal(),
             self.graph
         )
-        # self.mapf: Mapf = Mapf(self.astar)
+        self.mapf: Mapf = Mapf(self.astar)
 
     def run(self) -> None:
-        # mapf: dict[int, list[dict[str, Any]]] = self.mapf.prioritized_planning(
-        #     self.map.nb_drones
-        # )
-        # for key, value in mapf.items():
-        #     print(f"Turn: {key} -> {value}")
-        print(self.dijkstra.neighbors)
-        print("\n" * 2)
-        print(self.dijkstra.nodes_distance_from_goal())
-        print("\n" * 2)
-        print(self.astar.path_to_goal())
+        mapf: dict[int, list[dict[str, Any]]] = self.mapf.prioritized_planning(
+            self.map.nb_drones
+        )
+        for drone, path in mapf.items():
+            print(f"Drone {drone} ->  Path {path}")

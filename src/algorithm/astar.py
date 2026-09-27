@@ -19,19 +19,34 @@ class Astar:
             k: 0 if k == self.start_hub else float("inf") 
             for k in self.neighbors
         }
-        self.came_from: dict[str, str] = {}
+        self.came_from: dict[Any, Any] = {}
 
     def get_note(self, neighbor: str) -> float:
         if "-" in neighbor:
             return 1
 
         zone: str = self.nodes[neighbor].metadata.zone
-        if zone in ("normal", "restricted"):
+        if zone in ("normal", "priority", "restricted"):
             return 1
-        elif zone == "priority":
-            return 0.5
         else:
             return float("inf")
+
+    def get_capacity(
+        self,
+        turn: int,
+        target: str,
+        reservation_table: list[tuple[str, int]]
+    ) -> int:
+        occupied: int = len(
+            [
+                dest for dest, t in reservation_table
+                if t == turn and dest == target
+            ]
+        )
+
+        if "-" in target:
+            return self.graph.link_capacity[target] - occupied
+        return self.graph.zone_capacity[target] - occupied
 
     def get_g(self, current: str, neighbor: str) -> float:
         g: int = self.cost_so_far[current] + self.get_note(neighbor)
@@ -46,37 +61,61 @@ class Astar:
 
         return g + h
 
-    def path_to_goal(self) -> list[str]:
+    def path_to_goal(
+        self,
+        nb_drone: int,
+        reservation_table: list[tuple[str, int]]
+    ) -> list[str]:
         self.path: list[str] = []
-        reachable: list[str] = []
-        explored: set[str] = set()
-        reachable.append(self.start_hub)
+        reachable: list[tuple[int, str, int]] = []
+        explored: set[Any] = set()
+        reachable.append((self.start_hub, 0))
+        final_move: tuple[str, int] = ()
 
         while reachable:
             current: str = reachable.pop(0)
+            source, t_source = current
 
-            if current == self.end_hub:
+            if source == self.end_hub:
+                final_move = current
                 break
 
-            for neighbor in self.neighbors[current]:
-                if neighbor in explored:
-                    continue
-                reachable.append(neighbor)
+            moves: list[tuple[str, int]] = [(source, 1)] + [
+                (neighbor, self.get_note(neighbor))
+                for neighbor in self.neighbors[source]
+            ]
 
-            for neighbor in reachable:
-                weight: int = self.get_g(current, neighbor)
-                estimated_weight: int = self.cost_so_far[neighbor]
+            for target, duration in moves:
+                t_target: int = t_source + duration
+                next_move: tuple[str, int] = (target, t_target)
+
+                if next_move in explored:
+                    continue
+                if next_move in reservation_table and self.get_capacity(
+                    t_target,
+                    target,
+                    reservation_table
+                ) < 1:
+                    continue
+                reachable.append(next_move)
+
+            for move in reachable:
+                target, t = move
+                weight: int = self.get_g(source, target)
+                estimated_weight: int = self.cost_so_far[target]
                 if weight < estimated_weight:
-                    self.cost_so_far[neighbor] = weight
-                self.came_from[neighbor] = current
+                    self.cost_so_far[target] = weight
+                self.came_from[move] = current
 
             explored.add(current)
-            reachable = sorted(reachable, key=lambda k: self.get_f(current, k))
+            reachable = sorted(reachable, key=lambda r: self.get_f(source, r[0]))
         
-        current: str = self.end_hub
-        while current != self.start_hub:
+        current = final_move
+        while self.start_hub not in current:
             self.path.append(current)
             current = self.came_from[current]
-        self.path.append(self.start_hub)
+        self.path.append((self.start_hub, 0))
+
+        reservation_table.extend(self.path[::-1])
 
         return self.path[::-1]
