@@ -1,1 +1,1 @@
-from .extractor import Parser
+from .parser import Parser
