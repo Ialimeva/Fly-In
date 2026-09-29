@@ -10,6 +10,11 @@ class Simulation:
         self.map: Map = self.parser.validate_map()
         self.graph: MakeGraph = MakeGraph(self.map)
         self.dijkstra: Dijkstra = Dijkstra(self.graph)
+        heuristic = self.dijkstra.nodes_distance_from_goal()
+        if heuristic["start"] == float("inf"):
+            print("An error occured:\n")
+            raise SystemExit("No from start to goal")
+
         self.astar: Astar = Astar(
             self.dijkstra.nodes_distance_from_goal(),
             self.graph

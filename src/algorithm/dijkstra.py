@@ -37,6 +37,8 @@ class Dijkstra:
                     weight: int = self.nodes_distances[current_node] + 1
                 else:
                     zone: str = self.nodes[node].metadata.zone
+                    if zone == "blocked":
+                        continue
                     weight: int = self.nodes_distances[current_node] + 1
                 estimated_weight: int = self.nodes_distances[node]
 
@@ -45,7 +47,7 @@ class Dijkstra:
 
             explored.add(current_node)
             reachable = sorted(
-                (k for k in reachable if self.nodes_distances[k] != float("inf")),
+                reachable,
                 key=lambda k: self.nodes_distances[k]
             )
 
