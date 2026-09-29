@@ -44,6 +44,9 @@ class Dijkstra:
                     self.nodes_distances[node] = weight
 
             explored.add(current_node)
-            reachable = sorted(reachable, key=lambda k: self.nodes_distances[k])
+            reachable = sorted(
+                (k for k in reachable if self.nodes_distances[k] != float("inf")),
+                key=lambda k: self.nodes_distances[k]
+            )
 
         return self.nodes_distances

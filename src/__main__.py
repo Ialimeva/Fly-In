@@ -7,7 +7,10 @@ def main() -> None:
         simulation: Simulation = Simulation()
         simulation.run()
     except ValidationError as e:
-        print(e.errors()[0]["msg"])
+        print(
+            "An error occured:\n"
+            f"{e.errors()[0]['msg']}"
+        )
         raise SystemExit(1)
     except Exception as e:
         print(f"An error occured:\n{e}")

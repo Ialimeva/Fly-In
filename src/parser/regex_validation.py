@@ -44,12 +44,15 @@ class RegexValidator:
         
         nb_drone_line_count: int = 0
         self.nb_drones: dict[str, str] | None = None
-        for i, line in self.file_content.items():
-            if match:= re.match("".join(self.nb_drones_regex), line):
+        for line_number, line in self.file_content.items():
+            if (
+                list(self.file_content)[0] == line_number
+                and (match:= re.match("".join(self.nb_drones_regex), line))
+            ):
                 nb_drone_line_count += 1
                 if nb_drone_line_count > 1:
                     raise ValueError(
-                        f"Parsing error on line {i}:\n"
+                        f"Parsing error on line {line_number}:\n"
                         f"  Line content : {line!r}\n"
                         f"  Reason       : Duplicate nb_drones"
                     )
@@ -57,14 +60,57 @@ class RegexValidator:
                 self.nb_drones: dict[str, str] = match.groupdict()
 
             elif match:= re.match("".join(self.hub_regex), line):
-                self.raw_hubs.append(match.groupdict())
+                elements: dict[str, Any] = match.groupdict()
+                metadata: dict[str, Any] = {}
+
+                if elements["metadata"]:
+                    metadat_str: str = elements["metadata"].split()
+                    count_color: int = 0
+                    count_zone: int = 0
+                    count_max_drones: int = 0
+
+                    for m in metadat_str:
+                        if zone := re.search(
+                            r"^zone=(?P<zone>normal|priority|restricted|blocked)$",
+                            m
+                        ):
+                            count_zone += 1
+                            metadata["zone"] = zone.group("zone")
+                        elif color := re.search(
+                            r"^color=(?P<color>[A-Za-z]+)$",
+                            m
+                        ):
+                            count_color += 1
+                            metadata["color"] = color.group("color")
+                        elif max_drones := re.search(
+                            r"^max_drones=(?P<max_drones>\d+)$",
+                            m
+                        ):
+                            count_max_drones += 1
+                            metadata["max_drones"] = max_drones.group("max_drones")
+                        else:
+                            raise ValueError(
+                                f"Parsing error on line {line_number}:\n"
+                                f"  Line content : {line!r}\n"
+                                f"  Reason       : Unknown zone metadata"
+                            )
+                    for c in (count_color, count_zone, count_max_drones):
+                        if c > 1:
+                            raise ValueError(
+                                f"Parsing error on line {line_number}:\n"
+                                f"  Line content : {line!r}\n"
+                                f"  Reason       : Duplicate metadata"
+                            )                    
+                    elements["metadata"] = metadata
+
+                self.raw_hubs.append(elements)
             
             elif match:= re.match("".join(self.connection_regex), line):
                 self.raw_connections.append(match.groupdict())
 
             else:
                 raise ValueError(
-                    f"Parsing error on line {i}:\n"
+                    f"Parsing error on line {line_number}:\n"
                     f"  Line content : {line!r}\n"
                     f"  Reason       : Unrecognized syntax"
                 )

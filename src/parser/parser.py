@@ -1,6 +1,7 @@
 from ..models import Map, Hub, Connection, MetaData
 from .get_map_path import GetMapPath
 from .regex_validation import RegexValidator
+from typing import Any
 
 
 class Parser:
@@ -25,12 +26,24 @@ class Parser:
 
     def validate_hubs(self) -> dict[str, Hub]:
         coords: set[tuple[int, int]] = set()
+        count_start: int = 0
+        count_end: int = 0
 
         for hub in self.raw_hubs:
             name: str = hub["name"]
-            type: str = hub["type"]
+            zone_type: str = hub["type"]
             x: int = int(hub["x"])
             y: int = int(hub["y"])
+
+            if zone_type == "start_hub":
+                count_start += 1
+                if count_start > 1:
+                    raise ValueError(f"Duplicate {zone_type}")
+
+            if zone_type == "end_hub":
+                count_end += 1
+                if count_end > 1:
+                    raise ValueError(f"Duplicate {zone_type}")
 
             if name in self.hubs:
                 raise ValueError(f"Duplicate zone name found: {name!r}")
@@ -40,22 +53,7 @@ class Parser:
             coords.add((x, y))
 
             if hub["metadata"]:
-                datas: list[str] = hub["metadata"].split()
-                metadata: dict[str, str] = {}
-
-                for m in datas:
-                    k, v = m.split("=")
-                    if k == "max_drones":
-                        if "-" in v:
-                            raise Exception("max_drones must be a positive int")
-
-                    if (k and v) and k not in metadata:
-                        metadata[k] = v
-
-                    else:
-                        raise Exception(
-                            f"Error parsing metadata: {m!r}"
-                        )
+                metadata: dict[str, Any] = hub["metadata"]
                 hub["metadata"]: MetaData = MetaData(**metadata)
 
             else:
@@ -112,6 +110,7 @@ class Parser:
         hubs: dict[str, Hub] = self.validate_hubs()
         connections: dict[str, Connection] = self.validate_connextions()
 
+        print(nb_drones, hubs, connections)
         return Map(
             nb_drones=nb_drones,
             hubs=hubs,
