@@ -76,8 +76,10 @@ class Parser:
         for connection in self.raw_connections:
             name1: str = connection["name1"]
             name2: str = connection["name2"]
+
             edge: str = name1 + "-" + name2
             duplicate: str = name2 + "-" + name1
+
             max_link_capacity: str = connection["max_link_capacity"]
 
             for name in (name1, name2):

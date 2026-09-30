@@ -43,6 +43,53 @@ class RegexValidator:
         except Exception as e:
             raise Exception(e)
 
+    def vaidate_metadata(
+        self,
+        line_number: int,
+        line: str,
+        metadata_str: str,
+        metadata: dict[str, Any]
+    ) -> None:
+        metadata_str = metadata_str.split()
+        count_color: int = 0
+        count_zone: int = 0
+        count_max_drones: int = 0
+
+        for m in metadata_str:
+            if zone := re.search(
+                r"^zone=(?P<zone>normal|priority|restricted|blocked)$",
+                m
+            ):
+                count_zone += 1
+                metadata["zone"] = zone.group("zone")
+            elif color := re.search(
+                r"^color=(?P<color>[A-Za-z]+)$",
+                m
+            ):
+                count_color += 1
+                metadata["color"] = color.group("color")
+            elif max_drones := re.search(
+                r"^max_drones=(?P<max_drones>\d+)$",
+                m
+            ):
+                count_max_drones += 1
+                metadata["max_drones"] = max_drones.group("max_drones")
+
+            else:
+                raise ValueError(
+                    f"Parsing error on line {line_number}:\n"
+                    f"  Line content : {line!r}\n"
+                    f"  Reason       : Unknown zone metadata"
+                )
+
+        for c in (count_color, count_zone, count_max_drones):
+            if c > 1:
+                raise ValueError(
+                    f"Parsing error on line {line_number}:\n"
+                    f"  Line content : {line!r}\n"
+                    f"  Reason       : Duplicate metadata"
+                )
+
     def validate_file_content(self) -> tuple[Any, ...]:
         self.file_content: dict[int, str] = self.read_map()
         
@@ -69,54 +116,15 @@ class RegexValidator:
                 metadata: dict[str, Any] = {}
 
                 if elements["metadata"]:
-                    print(elements["metadata"])
-                    metadat_str: str = elements["metadata"]
-                    if re.match("".join(self.metadata_regex), metadat_str):
-                        metadat_str = metadat_str.split()
-                        count_color: int = 0
-                        count_zone: int = 0
-                        count_max_drones: int = 0
-
-                        for m in metadat_str:
-                            if zone := re.search(
-                                r"^zone=(?P<zone>normal|priority|restricted|blocked)$",
-                                m
-                            ):
-                                count_zone += 1
-                                metadata["zone"] = zone.group("zone")
-                            elif color := re.search(
-                                r"^color=(?P<color>[A-Za-z]+)$",
-                                m
-                            ):
-                                count_color += 1
-                                metadata["color"] = color.group("color")
-                            elif max_drones := re.search(
-                                r"^max_drones=(?P<max_drones>\d+)$",
-                                m
-                            ):
-                                count_max_drones += 1
-                                metadata["max_drones"] = max_drones.group("max_drones")
-
-                            else:
-                                raise ValueError(
-                                    f"Parsing error on line {line_number}:\n"
-                                    f"  Line content : {line!r}\n"
-                                    f"  Reason       : Unknown zone metadata"
-                                )
+                    if re.match("".join(self.metadata_regex), elements["metadata"]):
+                        self.vaidate_metadata(line_number, line, elements["metadata"], metadata)
                     else:
                         raise ValueError(
                             f"Parsing error on line {line_number}:\n"
                             f"  Line content : {line!r}\n"
                             f"  Reason       : Unknown zone metadata"
                         )
-
-                    for c in (count_color, count_zone, count_max_drones):
-                        if c > 1:
-                            raise ValueError(
-                                f"Parsing error on line {line_number}:\n"
-                                f"  Line content : {line!r}\n"
-                                f"  Reason       : Duplicate metadata"
-                            )                    
+                    
                     elements["metadata"] = metadata
 
                 self.raw_hubs.append(elements)
