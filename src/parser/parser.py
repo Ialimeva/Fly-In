@@ -110,7 +110,6 @@ class Parser:
         hubs: dict[str, Hub] = self.validate_hubs()
         connections: dict[str, Connection] = self.validate_connextions()
 
-        print(nb_drones, hubs, connections)
         return Map(
             nb_drones=nb_drones,
             hubs=hubs,
