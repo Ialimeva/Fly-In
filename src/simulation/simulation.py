@@ -10,6 +10,7 @@ class Simulation:
         self.map: Map = self.parser.validate_map()
         self.graph: MakeGraph = MakeGraph(self.map)
         self.dijkstra: Dijkstra = Dijkstra(self.graph)
+
         heuristic = self.dijkstra.nodes_distance_from_goal()
         if heuristic[self.graph.start_hub] == float("inf"):
             print("An error occured:")
@@ -22,7 +23,10 @@ class Simulation:
         self.mapf: Mapf = Mapf(self.astar)
         self.actions_per_turn: dict[int, Any] = {}
 
-    def set_action_per_turn(self, joint_plan: dict[int, Any]) -> dict[int, Any]:
+    def set_action_per_turn(
+        self,
+        joint_plan: dict[int, Any],
+    ) -> dict[int, Any]:
         for drone in joint_plan:
             for target, turn in joint_plan[drone]:
                 if turn not in self.actions_per_turn:
@@ -30,13 +34,17 @@ class Simulation:
                 self.actions_per_turn[turn].append(
                     {
                         "D": drone,
-                        "target": target
+                        "target": target,
                     }
                 )
 
         return self.actions_per_turn
 
-    def output_format(self, joint_plan: dict[int, Any]) -> None:
+# TODO: Change the output to follow the subject
+    def output_format(
+        self,
+        joint_plan: dict[int, Any],
+    ) -> None:
         self.set_action_per_turn(joint_plan)
         for turn in self.actions_per_turn:
             if turn == 0:
@@ -48,7 +56,7 @@ class Simulation:
 
 
     def run(self) -> None:
-        joint_plan: dict[int, Any] = self.mapf.cooperative_astar(
+        joint_plan = self.mapf.cooperative_astar(
             self.map.nb_drones
         )
         self.output_format(joint_plan)
