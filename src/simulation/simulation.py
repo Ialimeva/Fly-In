@@ -1,6 +1,7 @@
 from ..models import Map
 from ..parser import Parser
 from ..algorithm import MakeGraph, Dijkstra, Astar, Mapf
+from ..visual import Visual
 from typing import Any
 
 
@@ -22,6 +23,11 @@ class Simulation:
         )
         self.mapf: Mapf = Mapf(self.astar)
         self.actions_per_turn: dict[int, Any] = {}
+        self.visual: Visual = Visual(
+            self.actions_per_turn,
+            self.map.hubs,
+            self.map.connections
+        )
 
     def set_action_per_turn(
         self,
@@ -60,3 +66,4 @@ class Simulation:
             self.map.nb_drones
         )
         self.output_format(joint_plan)
+        self.visual.start()
