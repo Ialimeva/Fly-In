@@ -9,7 +9,8 @@ class GraphRenderer:
         self,
         window: Any,
         nodes: dict[str, Hub],
-        edges: dict[str, Connection]
+        edges: dict[str, Connection],
+        utils: Utils
     ) -> None:
         self.window = window
         self.window_w, self.window_h = self.window.get_rect().size
@@ -17,19 +18,23 @@ class GraphRenderer:
 
         self.nodes: dict[str, Hub] = nodes
         self.edges: dict[str, Connection] = edges
-        self.utils: Utils = Utils()
+        self.utils: Utils = utils
 
         self.edge_w: int = 250
         self.edge_h: int = 50
 
-        raw_img: Any = pygame.image.load(
-            "src/visual/assets/island.png"
-        ).convert_alpha()
-        w, h = raw_img.get_rect().size
-        scaled_img: Any = self.utils.scale_img(raw_img, (w // 7, h // 7))
+        self.zones: dict[str, Any] = {}
+        for zone in ("normal", "priority", "restricted", "blocked"):
+            raw_img = pygame.image.load(
+                f"src/visual/assets/zones/{zone}.png"
+            ).convert_alpha()
 
-        self.node_img = self.utils.crop_img(scaled_img)
-        self.node_w, self.node_h = self.node_img.get_rect().size
+            w, h = raw_img.get_rect().size
+            self.zones[zone] = self.utils.scale_img(
+                raw_img, (w, h)
+            )
+
+        self.node_w, self.node_h = (64, 64)
         self.xs: list[int] = [node.x for _, node in self.nodes.items()]
         self.ys: list[int] = [node.y for _, node in self.nodes.items()]
 
@@ -62,6 +67,7 @@ class GraphRenderer:
             x: int = (node.x - min(self.xs)) * (self.node_w + self.edge_w)
             y: int = (node.y - min(self.ys)) * (self.node_h + self.edge_h)
 
-            buffer.blit(self.node_img, (x, y))
+            zone: str = node.metadata.zone
+            buffer.blit(self.zones[zone], (x, y))
 
         return (buffer)

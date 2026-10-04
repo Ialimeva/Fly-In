@@ -4,7 +4,7 @@ from typing import Any
 
 class Camera:
     def __init__(self, window: Any, graph_buffer: Any) -> None:
-        self.speed: int = 10
+        self.speed: int = 20
         self.window: Any = window
         self.graph_buffer: Any = graph_buffer
         self.window_w, self.window_h = self.window.get_rect().size
@@ -22,10 +22,8 @@ class Camera:
         visible_w = min(self.buffer_w, self.window_w)
         visible_h = min(self.buffer_h, self.window_h)
 
-        self.window.fill((0, 0, 0))
         self.window.blit(
             self.graph_buffer,
             (offset_x, offset_y),
             area=pygame.Rect(cam_x, cam_y, visible_w, visible_h)
         )
-        pygame.display.flip()
