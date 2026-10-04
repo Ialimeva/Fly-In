@@ -14,6 +14,8 @@ class Dijkstra:
         self.start_hub, self.end_hub = self.graph.get_endpoints()
         for k in self.neighbors:
             if k == self.end_hub:
+                if self.nodes[k].metadata.zone == "blocked":
+                    raise Exception("end_hub is blocked.")
                 self.nodes_distances[k] = 0
             else:
                 self.nodes_distances[k] = float("inf")
