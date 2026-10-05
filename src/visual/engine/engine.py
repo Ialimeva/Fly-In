@@ -27,7 +27,7 @@ class Engine:
                     raise SystemExit
 
             self.background_renderer.animate()
-            self.drone_renderer.draw_drones()
+            self.drone_renderer.draw_turn()
 
             keys = pygame.key.get_pressed()
 
