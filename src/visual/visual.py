@@ -1,6 +1,6 @@
 import pygame
 from .engine import Engine
-from .renderer import GraphRenderer, Camera, Utils, BackgroundRenderer
+from .renderer import GraphRenderer, Camera, Utils, BackgroundRenderer, DronesRenderer
 from ..models import Hub, Connection
 from typing import Any
 
@@ -26,9 +26,10 @@ class Visual:
         self.utils: Utils = Utils()
         self.graph_renderer: GraphRenderer = GraphRenderer(self.window, self.nodes, self.edges, self.utils)
         self.background_renderer: BackgroundRenderer = BackgroundRenderer(self.utils, self.window)
-        self.graph_buffer: Any = self.graph_renderer.draw_graph()
+        self.graph_buffer, self.coordinates = self.graph_renderer.draw_graph()
+        self.drones_renderer: DronesRenderer = DronesRenderer(self.actions_per_turn, self.coordinates, self.graph_buffer)
         self.camera: Camera = Camera(self.window, self.graph_buffer)
-        self.engine: Engine = Engine(self.graph_renderer, self.background_renderer, self.camera)
+        self.engine: Engine = Engine(self.graph_renderer, self.background_renderer, self.drones_renderer, self.camera)
 
 
     def start(self) -> None:

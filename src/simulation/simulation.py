@@ -52,6 +52,7 @@ class Simulation:
         joint_plan: dict[int, Any],
     ) -> None:
         self.set_action_per_turn(joint_plan)
+        print(self.actions_per_turn)
         for turn in self.actions_per_turn:
             if turn == 0:
                 continue

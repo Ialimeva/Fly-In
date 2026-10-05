@@ -18,7 +18,7 @@ class BackgroundRenderer:
             self.backs.append(raw)
 
         self.frame_index: int = 0
-        self.frame_duration: int = 60
+        self.frame_duration: int = 40
         self.last_switch: int = pygame.time.get_ticks()
 
     def draw(self) -> None:

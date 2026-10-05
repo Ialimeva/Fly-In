@@ -1,6 +1,6 @@
 import pygame
 from typing import Any
-from ..renderer import GraphRenderer, Camera, BackgroundRenderer
+from ..renderer import GraphRenderer, Camera, BackgroundRenderer, DronesRenderer
 
 
 class Engine:
@@ -8,10 +8,12 @@ class Engine:
         self,
         graph_renderer: GraphRenderer,
         background_renderer: BackgroundRenderer,
+        drone_renderer: DronesRenderer,
         camera: Camera
     ) -> None:
         self.graph_renderer: GraphRenderer = graph_renderer
         self.background_renderer: BackgroundRenderer = background_renderer
+        self.drone_renderer: DronesRenderer = drone_renderer
         self.camera: Camera = camera
 
     def event_loop(self) -> None:
@@ -25,6 +27,7 @@ class Engine:
                     raise SystemExit
 
             self.background_renderer.animate()
+            self.drone_renderer.draw_drones()
 
             keys = pygame.key.get_pressed()
 
