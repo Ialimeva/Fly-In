@@ -35,11 +35,16 @@ class Simulation:
     ) -> dict[int, Any]:
         for drone in joint_plan:
             for target, turn in joint_plan[drone]:
+                if turn == 0:
+                    source = None
+                else:
+                    source, _ = self.astar.came_from[(target, turn)]
                 if turn not in self.actions_per_turn:
                     self.actions_per_turn[turn] = []
                 self.actions_per_turn[turn].append(
                     {
                         "D": drone,
+                        "source": source,
                         "target": target,
                     }
                 )
