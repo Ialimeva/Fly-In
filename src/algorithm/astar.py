@@ -34,6 +34,7 @@ class Astar:
     def get_capacity(
         self,
         turn: int,
+        source: str,
         target: str,
         reservation_table: list[tuple[str, int]]
     ) -> int:
@@ -45,8 +46,16 @@ class Astar:
         )
 
         if "-" in target:
-            return self.graph.link_capacity[target] - occupied
-        return self.graph.zone_capacity[target] - occupied
+            return (self.graph.link_capacity[target] - occupied, 1)
+
+        edge_capacity: int = 1
+        if source != target:
+            edge: str = source + "-" + target
+            edge_capacity = self.graph.link_capacity[edge] - 1
+        return (
+            self.graph.zone_capacity[target] - occupied,
+            edge_capacity
+        )
 
     def get_g(self, current: str, neighbor: str) -> float:
         g: int = self.cost_so_far[current] + self.get_note(neighbor)
@@ -91,12 +100,18 @@ class Astar:
 
                 if next_move in explored:
                     continue
-                if next_move in reservation_table and self.get_capacity(
-                    t_target,
-                    target,
-                    reservation_table
-                ) < 1:
-                    continue
+                if next_move in reservation_table:
+                    current_capacity, edge_capacity = self.get_capacity(
+                        t_target,
+                        source,
+                        target,
+                        reservation_table
+                    )
+                    print(current_capacity, edge_capacity)
+                    if edge_capacity < 1:
+                        continue
+                    if current_capacity < 1:
+                        continue
                 reachable.append(next_move)
 
             for move in reachable:
