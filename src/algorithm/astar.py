@@ -49,7 +49,7 @@ class Astar:
             return (self.graph.link_capacity[target] - occupied, 1)
 
         edge_capacity: int = 1
-        if source != target:
+        if source != target and "-" not in source:
             edge: str = source + "-" + target
             edge_capacity = self.graph.link_capacity[edge] - 1
         return (
