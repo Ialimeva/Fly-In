@@ -84,6 +84,8 @@ class Astar:
 
         while reachable:
             current: str = reachable.pop(0)
+            if current in explored:
+                continue
             source, t_source = current
 
             if source == self.end_hub:
@@ -113,6 +115,7 @@ class Astar:
                     if current_capacity < 1:
                         continue
                 reachable.append(next_move)
+                self.came_from[next_move] = current
 
             for move in reachable:
                 target, t = move
@@ -120,7 +123,6 @@ class Astar:
                 estimated_weight: int = self.cost_so_far[target]
                 if weight < estimated_weight:
                     self.cost_so_far[target] = weight
-                self.came_from[move] = current
 
             explored.add(current)
             reachable = sorted(reachable, key=lambda r: self.get_f(source, r[0]))

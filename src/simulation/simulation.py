@@ -13,6 +13,7 @@ class Simulation:
         self.dijkstra: Dijkstra = Dijkstra(self.graph)
 
         heuristic = self.dijkstra.nodes_distance_from_goal()
+        print(heuristic, flush=True)
         if heuristic[self.graph.start_hub] == float("inf"):
             print("An error occured:")
             raise SystemExit("No route from start to goal")

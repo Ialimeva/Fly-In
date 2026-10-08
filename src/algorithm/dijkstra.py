@@ -28,6 +28,8 @@ class Dijkstra:
 
         while reachable:
             current_node: str = reachable.pop(0)
+            if current_node in explored:
+                continue
 
             for neighbor in self.neighbors[current_node]:
                 if neighbor in explored:
