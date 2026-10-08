@@ -108,7 +108,6 @@ class Astar:
                         target,
                         reservation_table
                     )
-                    print(current_capacity, edge_capacity)
                     if edge_capacity < 1:
                         continue
                     if current_capacity < 1:

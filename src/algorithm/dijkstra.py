@@ -41,7 +41,10 @@ class Dijkstra:
                     zone: str = self.nodes[node].metadata.zone
                     if zone == "blocked":
                         continue
-                    weight: int = self.nodes_distances[current_node] + 1
+                    if zone == "priority":
+                        weight: int = self.nodes_distances[current_node] + 0.5
+                    else:
+                        weight: int = self.nodes_distances[current_node] + 1
                 estimated_weight: int = self.nodes_distances[node]
 
                 if weight < estimated_weight:
