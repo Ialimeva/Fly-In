@@ -29,6 +29,6 @@ class Connection(BaseModel, extra="forbid"):
     max_link_capacity: int = Field(default=1, gt=0)
 
 class Map(BaseModel, extra="forbid"):
-    nb_drones: int = Field(default=1, gt=0)
+    nb_drones: int = Field(default=1, gt=0, le=1000)
     hubs: dict[str, Hub] = {}
     connections: dict[str, Connection] = {}
