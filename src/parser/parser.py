@@ -65,7 +65,7 @@ class Parser:
                     hub["metadata"].max_drones = nb_drones
                 else:
                     hub["metadata"] = MetaData(
-                        max_drones=self.validate_nb_drones()
+                        max_drones=self.nb_drones
                     )
 
             self.hubs[hub["name"]] = Hub(**hub)

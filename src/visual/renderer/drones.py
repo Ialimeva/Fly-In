@@ -16,7 +16,6 @@ def lerp(a: float, b: float, t: float) -> float:
 
 
 def spread(i: int, n: int) -> tuple[float, float]:
-    """Offset of the i-th drone out of n sharing the same zone."""
     if n <= 1:
         return (0.0, 0.0)
     if n <= 7:
@@ -54,7 +53,11 @@ class DronesRenderer:
         self.base_img: Any = pygame.Surface(
             (tile_size, tile_size), pygame.SRCALPHA
         )
-        self.base_img.blit(raw_img, (0, 0), (0, 0, tile_size, tile_size))
+        self.base_img.blit(
+            raw_img,
+            (0, 0),
+            (0, 0, tile_size, tile_size)
+        )
 
         self.actions_per_turn: dict[int, Any] = actions_per_turn
         self.coordinates: dict[str, Any] = coordinates
@@ -65,25 +68,17 @@ class DronesRenderer:
         self._sprites: dict[int, Any] = {}
         self._labels: dict[int, Any] = {}
 
-        # Playback state
         self.tracks: dict[int, list[str]] = {}
         self.slots: list[dict[int, tuple[int, int]]] = []
         self.max_turn: int = 0
-        self.time: float = 0.0      # in turns; 3.5 = halfway through 3 -> 4
-        self.anim: float = 0.0      # hover clock, frozen while paused
+        self.time: float = 0.0
+        self.anim: float = 0.0
         self.paused: bool = False
         self.speed_index: int = 2
 
     # ---------- timeline ----------
 
     def build_timeline(self) -> None:
-        """Build one position-per-turn track for every drone.
-
-        Called from Visual.start(): actions_per_turn is only filled once the
-        simulation has run, i.e. after this renderer was constructed.
-        The track is built from each action's *target* only, so it doesn't
-        depend on the "source" field.
-        """
         self.max_turn = max(self.actions_per_turn, default=0)
 
         raw: dict[int, dict[int, str]] = {}
@@ -101,7 +96,6 @@ class DronesRenderer:
                 track.append(last)
             self.tracks[drone] = track
 
-        # How many drones share a zone/link each turn (to spread them out).
         self.slots = []
         for turn in range(self.max_turn + 1):
             groups: dict[str, list[int]] = {}
@@ -117,7 +111,6 @@ class DronesRenderer:
         self.paused = False
 
     def moves(self, turn: int) -> list[tuple[int, str, str]]:
-        """Drones that change zone/link during `turn` (turn-1 -> turn)."""
         if turn <= 0 or turn > self.max_turn:
             return []
         return [
@@ -126,16 +119,16 @@ class DronesRenderer:
             if track[turn - 1] != track[turn]
         ]
 
-    # ---------- playback controls ----------
-
     @property
     def finished(self) -> bool:
         return self.time >= self.max_turn
 
     @property
     def display_turn(self) -> int:
-        """Turn whose moves are currently on screen."""
-        return min(self.max_turn, max(0, math.ceil(self.time - 1e-9)))
+        return min(
+            self.max_turn,
+            max(0, math.ceil(self.time - 1e-9))
+        )
 
     @property
     def speed(self) -> float:
@@ -152,7 +145,6 @@ class DronesRenderer:
         self.paused = False
 
     def step(self, delta: int) -> None:
-        """Pause and snap to the previous / next whole turn."""
         if delta > 0:
             target: int = math.floor(self.time + 1e-9) + 1
         else:
@@ -173,10 +165,7 @@ class DronesRenderer:
         self.anim += dt
         self.time = min(float(self.max_turn), self.time + dt * self.speed)
 
-    # ---------- drawing ----------
-
     def anchor(self, name: str) -> tuple[float, float]:
-        """Center of a zone, or middle of a link (drone in transit)."""
         coords: Any = self.coordinates[name]
         if "-" in name:
             (x1, y1), (x2, y2) = coords

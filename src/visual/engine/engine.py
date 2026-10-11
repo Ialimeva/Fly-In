@@ -84,9 +84,6 @@ class Engine:
             self.background_renderer.animate()
             cam_x, cam_y = self.camera.present(cam_x, cam_y)
             to_screen: Any = self.camera.world_to_screen
-            self.graph_renderer.draw_overlay(
-                to_screen, self.drone_renderer.anim
-            )
             self.drone_renderer.draw(to_screen)
             self.hud.draw()
 

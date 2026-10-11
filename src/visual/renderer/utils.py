@@ -12,13 +12,6 @@ class Utils:
         return img.subsurface(bound).copy()
 
     def parse_color(self, name: str | None) -> Any | None:
-        """Turn a metadata color name into a pygame.Color.
-
-        Returns None when there is no color, when the name is "rainbow"
-        (handled as an animated overlay) or when pygame doesn't know it.
-        """
-        if not name or name.lower() == "rainbow":
-            return None
         try:
             return pygame.Color(name.lower())
         except ValueError:

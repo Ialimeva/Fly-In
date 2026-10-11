@@ -21,7 +21,7 @@ class Astar:
         }
         self.came_from: dict[Any, Any] = {}
 
-    def get_note(self, neighbor: str) -> float:
+    def get_duration(self, neighbor: str) -> float:
         if "-" in neighbor:
             return 1
 
@@ -38,28 +38,38 @@ class Astar:
         target: str,
         reservation_table: list[tuple[str, int]]
     ) -> int:
-        occupied: int = len(
+        zone_used: int = len(
             [
-                dest for dest, t in reservation_table
+                dest for _, dest, t in reservation_table
                 if t == turn and dest == target
+            ]
+        )
+        
+        link_used: int = len(
+            [
+                dest for src, dest, t in reservation_table
+                if t == turn and dest == target and src == source
             ]
         )
 
         if "-" in target:
-            return (self.graph.link_capacity[target] - occupied, 1)
+            return (
+                self.graph.link_capacity[target] - zone_used,
+                1
+            )
 
         edge_capacity: int = 1
         if source != target and "-" not in source:
             edge: str = source + "-" + target
             if edge in self.graph.link_capacity:
-                edge_capacity = self.graph.link_capacity[edge] - 1
+                edge_capacity = self.graph.link_capacity[edge] - link_used
         return (
-            self.graph.zone_capacity[target] - occupied,
+            self.graph.zone_capacity[target] - zone_used,
             edge_capacity
         )
 
     def get_g(self, current: str, neighbor: str) -> float:
-        g: int = self.cost_so_far[current] + self.get_note(neighbor)
+        g: int = self.cost_so_far[current] + self.get_duration(neighbor)
         return g
 
     def get_h(self, neighbor: str) -> int:
@@ -79,59 +89,58 @@ class Astar:
         self.path: list[str] = []
         reachable: list[tuple[int, str, int]] = []
         explored: set[Any] = set()
-        reachable.append((self.start_hub, 0))
+        reachable.append((None, self.start_hub, 0))
         final_move: tuple[str, int] = ()
 
         while reachable:
             current: str = reachable.pop(0)
             if current in explored:
                 continue
-            source, t_source = current
+            _, source, t_source = current
 
             if source == self.end_hub:
                 final_move = current
                 break
 
-            moves: list[tuple[str, int]] = [(source, 1)] + [
-                (neighbor, self.get_note(neighbor))
+            moves: list[tuple[str, int]] = [(source, source, 1)] + [
+                (source, neighbor, self.get_duration(neighbor))
                 for neighbor in self.neighbors[source]
             ]
 
-            for target, duration in moves:
+            for _, target, duration in moves:
                 t_target: int = t_source + duration
-                next_move: tuple[str, int] = (target, t_target)
+                next_move: tuple[str, int] = (source, target, t_target)
 
                 if next_move in explored:
                     continue
-                if next_move in reservation_table:
-                    current_capacity, edge_capacity = self.get_capacity(
-                        t_target,
-                        source,
-                        target,
-                        reservation_table
-                    )
-                    if edge_capacity < 1:
-                        continue
-                    if current_capacity < 1:
-                        continue
+                current_capacity, edge_capacity = self.get_capacity(
+                    t_target,
+                    source,
+                    target,
+                    reservation_table
+                )
+                if edge_capacity < 1:
+                    continue
+                if current_capacity < 1:
+                    continue
                 reachable.append(next_move)
                 self.came_from[next_move] = current
 
             for move in reachable:
-                target, t = move
+                _, target, t = move
                 weight: int = self.get_g(source, target)
                 estimated_weight: int = self.cost_so_far[target]
                 if weight < estimated_weight:
                     self.cost_so_far[target] = weight
 
             explored.add(current)
-            reachable = sorted(reachable, key=lambda r: self.get_f(source, r[0]))
+            reachable = sorted(reachable, key=lambda r: self.get_f(source, r[1]))
         
         current = final_move
-        while self.start_hub not in current:
+        while self.start_hub != current[1]:
             self.path.append(current)
             current = self.came_from[current]
-        self.path.append((self.start_hub, 0))
+        self.path.append((None, self.start_hub, 0))
 
         reservation_table.extend(self.path[::-1])
 

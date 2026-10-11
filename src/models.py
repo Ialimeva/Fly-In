@@ -19,8 +19,8 @@ class Hub(BaseModel, extra="forbid"):
         "hub"
     ] = Field(default="hub")
     name: str
-    x: int
-    y: int
+    x: int = Field(le=100)
+    y: int = Field(le=100)
     metadata: MetaData = Field(default=MetaData())
 
 class Connection(BaseModel, extra="forbid"):

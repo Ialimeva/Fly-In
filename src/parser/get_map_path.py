@@ -2,9 +2,6 @@ import questionary
 
 
 class GetMapPath:
-    def __init__(self):
-        self.map_path: str
-
     def get_level(self) -> str:
         level: str = questionary.select(
             "Choose difficulty:",
@@ -24,7 +21,7 @@ class GetMapPath:
         dir: str = "src/maps/"
         if level == "custom map":
             self.map_path = questionary.path(
-                "What's the path of your custom map?" + 
+                "What's the path of your custom map?" +
                 " (Use Tab for anvigation)"
             ).ask()
 

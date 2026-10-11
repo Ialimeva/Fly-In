@@ -12,8 +12,6 @@ GAP = 8
 
 
 class Hud:
-    """Playback controls: buttons, progress bar, turn info, move list."""
-
     def __init__(self, window: Any, drones: Any) -> None:
         self.window: Any = window
         self.drones: Any = drones
@@ -33,10 +31,7 @@ class Hud:
         self.bar = pygame.Rect(MARGIN, self.h - MARGIN - 18, self.w - 2 * MARGIN, 18)
         self._bg: dict[tuple[int, int, int], Any] = {}
 
-    # ---------- input ----------
-
     def handle_click(self, pos: tuple[int, int]) -> bool:
-        """Returns True when the click landed on the HUD."""
         d: Any = self.drones
         actions: dict[str, Any] = {
             "prev": lambda: d.step(-1),
@@ -57,8 +52,6 @@ class Hud:
             return True
 
         return self.info_rect.collidepoint(pos)
-
-    # ---------- drawing helpers ----------
 
     def panel(self, rect: Any, alpha: int = 165) -> None:
         key = (rect.w, rect.h, alpha)
@@ -109,8 +102,6 @@ class Hud:
         elif name == "faster":
             pygame.draw.rect(w, WHITE, (cx - 9, cy - 2, 18, 4))
             pygame.draw.rect(w, WHITE, (cx - 2, cy - 9, 4, 18))
-
-    # ---------- main draw ----------
 
     def draw(self) -> None:
         d: Any = self.drones

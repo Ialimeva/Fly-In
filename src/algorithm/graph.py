@@ -46,14 +46,3 @@ class MakeGraph:
 
         return self.neighbors
 
-    def get_node_weight(self, zone: str) -> int|float:
-        if zone in ("normal", "priority"):
-            return 1
-        else:
-            return float("inf")
-
-    def get_node_coords(self, node: str) -> tuple[int, int]:
-        return (
-            self.nodes[node].x,
-            self.nodes[node].y,
-        )

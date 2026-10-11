@@ -1,7 +1,12 @@
 import pygame
 from .engine import Engine
 from .renderer import (
-    GraphRenderer, Camera, Utils, BackgroundRenderer, DronesRenderer, Hud
+    GraphRenderer,
+    Camera,
+    Utils,
+    BackgroundRenderer,
+    DronesRenderer,
+    Hud
 )
 from ..models import Hub, Connection
 from typing import Any
@@ -26,10 +31,23 @@ class Visual:
         self.edges: dict[str, Connection] = edges
 
         self.utils: Utils = Utils()
-        self.graph_renderer: GraphRenderer = GraphRenderer(self.window, self.nodes, self.edges, self.utils)
-        self.background_renderer: BackgroundRenderer = BackgroundRenderer(self.utils, self.window)
+        self.graph_renderer: GraphRenderer = GraphRenderer(
+            self.window,
+            self.nodes,
+            self.edges,
+            self.utils
+        )
+        self.background_renderer: BackgroundRenderer = BackgroundRenderer(
+            self.utils,
+            self.window
+        )
         self.graph_buffer, self.coordinates = self.graph_renderer.draw_graph()
-        self.drones_renderer: DronesRenderer = DronesRenderer(self.actions_per_turn, self.coordinates, self.window, self.utils)
+        self.drones_renderer: DronesRenderer = DronesRenderer(
+            self.actions_per_turn,
+            self.coordinates,
+            self.window,
+            self.utils
+        )
         self.camera: Camera = Camera(self.window, self.graph_buffer)
         self.hud: Hud = Hud(self.window, self.drones_renderer)
         self.engine: Engine = Engine(

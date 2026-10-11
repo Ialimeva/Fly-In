@@ -13,7 +13,6 @@ class Simulation:
         self.dijkstra: Dijkstra = Dijkstra(self.graph)
 
         heuristic = self.dijkstra.nodes_distance_from_goal()
-        print(heuristic, flush=True)
         if heuristic[self.graph.start_hub] == float("inf"):
             print("An error occured:")
             raise SystemExit("No route from start to goal")
@@ -35,11 +34,7 @@ class Simulation:
         joint_plan: dict[int, Any],
     ) -> dict[int, Any]:
         for drone in joint_plan:
-            for target, turn in joint_plan[drone]:
-                if turn == 0:
-                    source = None
-                else:
-                    source, _ = self.astar.came_from[(target, turn)]
+            for source, target, turn in joint_plan[drone]:
                 if turn not in self.actions_per_turn:
                     self.actions_per_turn[turn] = []
                 self.actions_per_turn[turn].append(
@@ -58,11 +53,9 @@ class Simulation:
         joint_plan: dict[int, Any],
     ) -> None:
         self.set_action_per_turn(joint_plan)
-        print(self.actions_per_turn)
         for turn in self.actions_per_turn:
             if turn == 0:
                 continue
-            print(f"Turn {turn} -> ", end="")
             for action in self.actions_per_turn[turn]:
                 print(f"D{action['D']}-{action['target']}", end=" ")
             print()

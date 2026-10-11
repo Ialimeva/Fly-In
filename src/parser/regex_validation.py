@@ -3,7 +3,7 @@ from typing import Any
 
 
 class RegexValidator:
-    def __init__(self, map_path: str) -> str:
+    def __init__(self, map_path: str) -> None:
         self.map_path: str = map_path
         self.nb_drones_regex: tuple[str] = (
             r"^nb_drones:\s+(?P<nb_drones>\d+)$"
@@ -111,13 +111,21 @@ class RegexValidator:
 
                 self.nb_drones: dict[str, str] = match.groupdict()
 
-            elif match:= re.match("".join(self.hub_regex), line):
+            elif match := re.match("".join(self.hub_regex), line):
                 elements: dict[str, Any] = match.groupdict()
                 metadata: dict[str, Any] = {}
 
                 if elements["metadata"]:
-                    if re.match("".join(self.metadata_regex), elements["metadata"]):
-                        self.vaidate_metadata(line_number, line, elements["metadata"], metadata)
+                    if re.match(
+                        "".join(self.metadata_regex),
+                        elements["metadata"]
+                    ):
+                        self.vaidate_metadata(
+                            line_number,
+                            line,
+                            elements["metadata"],
+                            metadata
+                        )
                     else:
                         raise ValueError(
                             f"Parsing error on line {line_number}:\n"
@@ -129,7 +137,10 @@ class RegexValidator:
 
                 self.raw_hubs.append(elements)
             
-            elif match:= re.match("".join(self.connection_regex), line):
+            elif match:= re.match(
+                "".join(self.connection_regex),
+                line
+            ):
                 self.raw_connections.append(match.groupdict())
 
             else:
@@ -147,7 +158,9 @@ class RegexValidator:
 
         for data, name in components:
             if not data:
-                raise Exception(f"Missing section in map file: {name}")
+                raise Exception(
+                    f"Missing section in map file: {name}"
+                )
 
         return (
             self.nb_drones,

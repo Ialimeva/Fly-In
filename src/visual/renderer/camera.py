@@ -9,7 +9,7 @@ class Camera:
         self.graph_buffer: Any = graph_buffer
         self.window_w, self.window_h = self.window.get_rect().size
         self.buffer_w, self.buffer_h = self.graph_buffer.get_rect().size
-        # Screen position of the graph buffer's (0, 0) pixel.
+
         self.origin: tuple[int, int] = (0, 0)
 
     def world_to_screen(self, x: float, y: float) -> tuple[float, float]:
@@ -34,5 +34,4 @@ class Camera:
             area=pygame.Rect(cam_x, cam_y, visible_w, visible_h)
         )
 
-        # Return the clamped values so the caller never drifts past the edge.
         return cam_x, cam_y
