@@ -32,16 +32,36 @@ class Simulation:
     def set_action_per_turn(
         self,
         joint_plan: dict[int, Any],
+        reservation_table: list[tuple[Any, ...]],
     ) -> dict[int, Any]:
+        goal_capacity: int = 0
         for drone in joint_plan:
             for source, target, turn in joint_plan[drone]:
                 if turn not in self.actions_per_turn:
                     self.actions_per_turn[turn] = []
+                capacity: str = ""
+                if target == self.graph.end_hub:
+                    goal_capacity += 1
+                    capacity = f"{goal_capacity}/{self.map.nb_drones}"
+                elif source:
+                    free_capacity, _ = self.astar.get_capacity(
+                        turn,
+                        source,
+                        target,
+                        reservation_table
+                    )
+                    if "-" in target:
+                        base_capacity: int = self.graph.link_capacity[target]
+                    else:
+                        base_capacity: int = self.graph.zone_capacity[target]
+                    used_capacity: int = base_capacity - free_capacity
+                    capacity = f"{used_capacity}/{base_capacity}"
                 self.actions_per_turn[turn].append(
                     {
                         "D": drone,
                         "source": source,
                         "target": target,
+                        "capacity": capacity
                     }
                 )
 
@@ -51,8 +71,9 @@ class Simulation:
     def output_format(
         self,
         joint_plan: dict[int, Any],
+        reservation_table: list[tuple[Any, ...]],
     ) -> None:
-        self.set_action_per_turn(joint_plan)
+        self.set_action_per_turn(joint_plan, reservation_table)
         for turn in self.actions_per_turn:
             if turn == 0:
                 continue
@@ -62,8 +83,8 @@ class Simulation:
 
 
     def run(self) -> None:
-        joint_plan = self.mapf.cooperative_astar(
+        joint_plan, reservation_table = self.mapf.cooperative_astar(
             self.map.nb_drones
         )
-        self.output_format(joint_plan)
+        self.output_format(joint_plan, reservation_table)
         self.visual.start()

@@ -12,11 +12,11 @@ def main() -> None:
             f"{e.errors()[0]['msg']}"
         )
         raise SystemExit(1)
-    except (KeyboardInterrupt, EOFError):
-        raise SystemExit
-    except Exception as e:
-        print(f"An error occured:\n{e}")
-        raise SystemExit(1)
+    # except (KeyboardInterrupt, EOFError):
+    #     raise SystemExit
+    # except Exception as e:
+    #     print(f"An error occured:\n{e}")
+    #     raise SystemExit(1)
 
 
 if __name__ == "__main__":
