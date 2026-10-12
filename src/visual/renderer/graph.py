@@ -1,7 +1,7 @@
 import pygame
 from typing import Any
 from .utils import Utils
-from models import Hub, Connection
+from ...models import Hub, Connection
 
 
 class GraphRenderer:

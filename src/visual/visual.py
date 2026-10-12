@@ -8,7 +8,7 @@ from .renderer import (
     DronesRenderer,
     Hud
 )
-from models import Hub, Connection
+from ..models import Hub, Connection
 from typing import Any
 
 

@@ -20,10 +20,10 @@ fclean:
 	@ find . -type d -name ".venv" -exec rm -rf {} +
 
 lint:
-	@ flake8 . --exclude=.venv && mypy . --exclude=.venv \
+	@ flake8 $(FLY_IN) --exclude=.venv && mypy -m $(FLY_IN) --exclude=.venv \
 	--warn-return-any --warn-unused-ignores \
 	--ignore-missing-imports --disallow-untyped-defs \
 	--check-untyped-defs
 
 lint-strict:
-	@ flake8 . --exclude=.venv && mypy --strict . --exclude=.venv
+	@ flake8 $(FLY_IN) --exclude=.venv && mypy -m $(FLY_IN) --strict --exclude=.venv

@@ -1,7 +1,7 @@
-from models import Map
-from parser import Parser
-from algorithm import MakeGraph, Dijkstra, Astar, Mapf
-from visual import Visual
+from ..models import Map
+from ..parser import Parser
+from ..algorithm import MakeGraph, Dijkstra, Astar, Mapf
+from ..visual import Visual
 from typing import Any
 
 

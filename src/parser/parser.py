@@ -1,4 +1,4 @@
-from models import Map, Hub, Connection, MetaData
+from ..models import Map, Hub, Connection, MetaData
 from .get_map_path import GetMapPath
 from .regex_validation import RegexValidator
 from typing import Any
