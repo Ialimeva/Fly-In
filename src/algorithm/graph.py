@@ -16,7 +16,7 @@ class MakeGraph:
             edge: self.edges[edge].max_link_capacity
             for edge in self.edges
         }
-    
+
     def get_endpoints(self) -> None:
         for k, v in self.nodes.items():
             if v.type == "start_hub":
@@ -45,4 +45,3 @@ class MakeGraph:
                         self.neighbors[neighbor].add(node)
 
         return self.neighbors
-

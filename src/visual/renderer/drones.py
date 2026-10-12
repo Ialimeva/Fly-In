@@ -3,39 +3,6 @@ import pygame
 from typing import Any
 from .utils import Utils
 
-NODE: int = 64
-SPEEDS: tuple[float, ...] = (0.25, 0.5, 1.0, 2.0, 4.0)
-
-
-def ease(f: float) -> float:
-    return f * f * (3 - 2 * f)
-
-
-def lerp(a: float, b: float, t: float) -> float:
-    return a + (b - a) * t
-
-
-def spread(i: int, n: int) -> tuple[float, float]:
-    if n <= 1:
-        return (0.0, 0.0)
-    if n <= 7:
-        angle: float = 2 * math.pi * i / n - math.pi / 2
-        return (20 * math.cos(angle), 20 * math.sin(angle))
-    if i == 0:
-        return (0.0, 0.0)
-    ring, left = 1, i - 1
-    while left >= 6 * ring:
-        left -= 6 * ring
-        ring += 1
-    angle = 2 * math.pi * left / (6 * ring)
-    return (22 * ring * math.cos(angle), 22 * ring * math.sin(angle))
-
-
-def size_for(n: int) -> int:
-    if n <= 1:
-        return 64
-    return 48 if n <= 7 else 34
-
 
 class DronesRenderer:
     def __init__(
@@ -68,15 +35,41 @@ class DronesRenderer:
         self._sprites: dict[int, Any] = {}
         self._labels: dict[int, Any] = {}
 
+        self.node: int = 64
         self.tracks: dict[int, list[str]] = {}
         self.slots: list[dict[int, tuple[int, int]]] = []
         self.max_turn: int = 0
         self.time: float = 0.0
         self.anim: float = 0.0
         self.paused: bool = False
+        self.speeds: tuple[float, ...] = (0.25, 0.5, 1.0, 2.0, 4.0)
         self.speed_index: int = 2
+    
+    def ease(self, f: float) -> float:
+        return f * f * (3 - 2 * f)
 
-    # ---------- timeline ----------
+    def lerp(self, a: float, b: float, t: float) -> float:
+        return a + (b - a) * t
+
+    def spread(self, i: int, n: int) -> tuple[float, float]:
+        if n <= 1:
+            return (0.0, 0.0)
+        if n <= 7:
+            angle: float = 2 * math.pi * i / n - math.pi / 2
+            return (20 * math.cos(angle), 20 * math.sin(angle))
+        if i == 0:
+            return (0.0, 0.0)
+        ring, left = 1, i - 1
+        while left >= 6 * ring:
+            left -= 6 * ring
+            ring += 1
+        angle = 2 * math.pi * left / (6 * ring)
+        return (22 * ring * math.cos(angle), 22 * ring * math.sin(angle))
+
+    def size_for(self, n: int) -> int:
+        if n <= 1:
+            return 64
+        return 48 if n <= 7 else 34
 
     def build_timeline(self) -> None:
         self.max_turn = max(self.actions_per_turn, default=0)
@@ -132,7 +125,7 @@ class DronesRenderer:
 
     @property
     def speed(self) -> float:
-        return SPEEDS[self.speed_index]
+        return self.speeds[self.speed_index]
 
     def toggle_pause(self) -> None:
         if self.finished:
@@ -171,7 +164,7 @@ class DronesRenderer:
             (x1, y1), (x2, y2) = coords
             return ((x1 + x2) / 2, (y1 + y2) / 2)
         x, y = coords
-        return (x + NODE / 2, y + NODE / 2)
+        return (x + self.node / 2, y + self.node / 2)
 
     def sprite(self, size: int) -> Any:
         if size not in self._sprites:
@@ -202,7 +195,7 @@ class DronesRenderer:
         if k >= self.max_turn:
             k2, s = k, 0.0
         else:
-            k2, s = k + 1, ease(self.time - k)
+            k2, s = k + 1, self.self.ease(self.time - k)
 
         win_w, win_h = self.window.get_size()
         items: list[tuple[float, int, float, float, float]] = []
@@ -212,12 +205,12 @@ class DronesRenderer:
             bx, by = self.anchor(track[k2])
             ia, na = self.slots[k][drone]
             ib, nb = self.slots[k2][drone]
-            oax, oay = spread(ia, na)
-            obx, oby = spread(ib, nb)
+            oax, oay = self.spread(ia, na)
+            obx, oby = self.spread(ib, nb)
 
-            x: float = lerp(ax + oax, bx + obx, s)
-            y: float = lerp(ay + oay, by + oby, s)
-            size: float = lerp(size_for(na), size_for(nb), s)
+            x: float = self.lerp(ax + oax, bx + obx, s)
+            y: float = self.lerp(ay + oay, by + oby, s)
+            size: float = self.lerp(self.size_for(na), self.size_for(nb), s)
             bob: float = math.sin(self.anim * 4 + drone) * 3
             items.append((y, drone, x, y + bob, size))
 

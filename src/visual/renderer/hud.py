@@ -1,15 +1,6 @@
 import pygame
 from typing import Any
 
-WHITE = (255, 255, 255)
-GREY = (170, 175, 190)
-YELLOW = (255, 210, 60)
-GREEN = (110, 230, 140)
-BLUE = (120, 190, 255)
-MARGIN = 16
-BTN = 44
-GAP = 8
-
 
 class Hud:
     def __init__(self, window: Any, drones: Any) -> None:
@@ -23,12 +14,12 @@ class Hud:
 
         names = ("prev", "play", "next", "restart", "slower", "faster")
         self.buttons: dict[str, Any] = {
-            name: pygame.Rect(MARGIN + i * (BTN + GAP), MARGIN, BTN, BTN)
+            name: pygame.Rect(16 + i * (44 + 9), 16, 44, 44)
             for i, name in enumerate(names)
         }
-        strip_w: int = len(names) * BTN + (len(names) - 1) * GAP
-        self.info_rect = pygame.Rect(MARGIN, MARGIN + BTN + GAP, strip_w, 108)
-        self.bar = pygame.Rect(MARGIN, self.h - MARGIN - 18, self.w - 2 * MARGIN, 18)
+        strip_w: int = len(names) * 44 + (len(names) - 1) * 9
+        self.info_rect = pygame.Rect(16, 16 + 44 + 9, strip_w, 108)
+        self.bar = pygame.Rect(16, self.h - 16 - 18, self.w - 2 * 16, 18)
         self._bg: dict[tuple[int, int, int], Any] = {}
 
     def handle_click(self, pos: tuple[int, int]) -> bool:
@@ -74,34 +65,34 @@ class Hud:
         if name == "play":
             if d.paused or d.finished:
                 pygame.draw.polygon(
-                    w, WHITE,
+                    w, (255, 255, 255),
                     [(cx - 7, cy - 11), (cx - 7, cy + 11), (cx + 11, cy)]
                 )
             else:
-                pygame.draw.rect(w, WHITE, (cx - 9, cy - 11, 6, 22))
-                pygame.draw.rect(w, WHITE, (cx + 3, cy - 11, 6, 22))
+                pygame.draw.rect(w, (255, 255, 255), (cx - 9, cy - 11, 6, 22))
+                pygame.draw.rect(w, (255, 255, 255), (cx + 3, cy - 11, 6, 22))
         elif name == "prev":
-            pygame.draw.rect(w, WHITE, (cx - 11, cy - 10, 3, 20))
+            pygame.draw.rect(w, (255, 255, 255), (cx - 11, cy - 10, 3, 20))
             pygame.draw.polygon(
-                w, WHITE, [(cx + 10, cy - 10), (cx + 10, cy + 10), (cx - 6, cy)]
+                w, (255, 255, 255), [(cx + 10, cy - 10), (cx + 10, cy + 10), (cx - 6, cy)]
             )
         elif name == "next":
-            pygame.draw.rect(w, WHITE, (cx + 8, cy - 10, 3, 20))
+            pygame.draw.rect(w, (255, 255, 255), (cx + 8, cy - 10, 3, 20))
             pygame.draw.polygon(
-                w, WHITE, [(cx - 10, cy - 10), (cx - 10, cy + 10), (cx + 6, cy)]
+                w, (255, 255, 255), [(cx - 10, cy - 10), (cx - 10, cy + 10), (cx + 6, cy)]
             )
         elif name == "restart":
             pygame.draw.arc(
-                w, WHITE, pygame.Rect(cx - 10, cy - 10, 20, 20), 0.9, 6.0, 3
+                w, (255, 255, 255), pygame.Rect(cx - 10, cy - 10, 20, 20), 0.9, 6.0, 3
             )
             pygame.draw.polygon(
-                w, WHITE, [(cx + 3, cy - 14), (cx + 3, cy - 4), (cx + 12, cy - 9)]
+                w, (255, 255, 255), [(cx + 3, cy - 14), (cx + 3, cy - 4), (cx + 12, cy - 9)]
             )
         elif name == "slower":
-            pygame.draw.rect(w, WHITE, (cx - 9, cy - 2, 18, 4))
+            pygame.draw.rect(w, (255, 255, 255), (cx - 9, cy - 2, 18, 4))
         elif name == "faster":
-            pygame.draw.rect(w, WHITE, (cx - 9, cy - 2, 18, 4))
-            pygame.draw.rect(w, WHITE, (cx - 2, cy - 9, 4, 18))
+            pygame.draw.rect(w, (255, 255, 255), (cx - 9, cy - 2, 18, 4))
+            pygame.draw.rect(w, (255, 255, 255), (cx - 2, cy - 9, 4, 18))
 
     def draw(self) -> None:
         d: Any = self.drones
@@ -110,7 +101,7 @@ class Hud:
         for name, rect in self.buttons.items():
             self.panel(rect, 200)
             if rect.collidepoint(mouse):
-                pygame.draw.rect(self.window, WHITE, rect, 2, border_radius=12)
+                pygame.draw.rect(self.window, (255, 255, 255), rect, 2, border_radius=12)
             self.icon(name, rect)
 
         self.draw_info()
@@ -123,22 +114,22 @@ class Hud:
         r: Any = self.info_rect
         self.panel(r)
 
-        self.text(self.font_big, f"Turn {d.display_turn} / {d.max_turn}", WHITE, (r.x + 10, r.y + 8))
+        self.text(self.font_big, f"Turn {d.display_turn} / {d.max_turn}", (255, 255, 255), (r.x + 10, r.y + 8))
 
         if d.finished:
-            status, color = "FINISHED (press R)", GREEN
+            status, color = "FINISHED (press R)", (110, 230, 140)
         elif d.paused:
-            status, color = "PAUSED", YELLOW
+            status, color = "PAUSED", (255, 210, 60)
         else:
-            status, color = "PLAYING", BLUE
+            status, color = "PLAYING", (120, 190, 255)
         extra: str = ""
         k: int = int(d.time)
         if not d.finished and d.time - k > 1e-6:
             extra = f"  {k}->{k + 1}  {int((d.time - k) * 100)}%"
         self.text(self.font, f"{status}  x{d.speed:g}{extra}", color, (r.x + 10, r.y + 40))
 
-        self.text(self.font_small, "SPACE pause | , . step | R restart", GREY, (r.x + 10, r.y + 66))
-        self.text(self.font_small, "+/- speed | arrows or drag: pan", GREY, (r.x + 10, r.y + 84))
+        self.text(self.font_small, "SPACE pause | , . step | R restart", (170, 175, 190), (r.x + 10, r.y + 66))
+        self.text(self.font_small, "+/- speed | arrows or drag: pan", (170, 175, 190), (r.x + 10, r.y + 84))
 
     def draw_bar(self) -> None:
         d: Any = self.drones
@@ -154,7 +145,7 @@ class Hud:
                 x: int = bar.x + int(bar.w * t / d.max_turn)
                 pygame.draw.line(self.window, (255, 255, 255), (x, bar.y + 12), (x, bar.bottom - 1), 1)
 
-        pygame.draw.circle(self.window, WHITE, (bar.x + int(bar.w * frac), bar.centery), 9)
+        pygame.draw.circle(self.window, (255, 255, 255), (bar.x + int(bar.w * frac), bar.centery), 9)
 
     def draw_moves(self) -> None:
         d: Any = self.drones
@@ -170,8 +161,8 @@ class Hud:
             waiting: int = len(d.tracks) - len(moves)
             lines.append(f"({waiting} waiting)")
 
-        rect = pygame.Rect(self.w - 316, MARGIN, 300, 38 + 20 * len(lines))
+        rect = pygame.Rect(self.w - 316, 16, 300, 38 + 20 * len(lines))
         self.panel(rect)
-        self.text(self.font, f"Turn {turn} moves", YELLOW, (rect.x + 10, rect.y + 8))
+        self.text(self.font, f"Turn {turn} moves", (255, 210, 60), (rect.x + 10, rect.y + 8))
         for i, line in enumerate(lines):
-            self.text(self.font_small, line, WHITE, (rect.x + 10, rect.y + 34 + 20 * i))
+            self.text(self.font_small, line, (255, 255, 255), (rect.x + 10, rect.y + 34 + 20 * i))

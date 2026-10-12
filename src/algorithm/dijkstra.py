@@ -2,7 +2,7 @@ from ..models import Hub
 from .graph import MakeGraph
 from typing import Any
 
-# TODO: Arrange code for better code quality
+
 class Dijkstra:
     def __init__(self, graph: MakeGraph) -> None:
         self.graph: MakeGraph = graph
@@ -20,7 +20,7 @@ class Dijkstra:
             else:
                 self.nodes_distances[k] = float("inf")
 
-    def nodes_distance_from_goal(self) -> dict[str, int|float]:
+    def nodes_distance_from_goal(self) -> dict[str, int | float]:
         self.set_starting_distance()
         reachable: list[str] = []
         explored: set[str] = set()

@@ -16,7 +16,7 @@ class Astar:
         self.start_hub, self.end_hub = self.graph.get_endpoints()
         self.neighbors: dict[str, set[str]] = self.graph.get_graph()
         self.cost_so_far: dict[str, int] = {
-            k: 0 if k == self.start_hub else float("inf") 
+            k: 0 if k == self.start_hub else float("inf")
             for k in self.neighbors
         }
         self.came_from: dict[Any, Any] = {}
@@ -44,7 +44,7 @@ class Astar:
                 if t == turn and dest == target
             ]
         )
-        
+
         link_used: int = len(
             [
                 dest for src, dest, t in reservation_table
@@ -134,8 +134,11 @@ class Astar:
                     self.cost_so_far[target] = weight
 
             explored.add(current)
-            reachable = sorted(reachable, key=lambda r: self.get_f(source, r[1]))
-        
+            reachable = sorted(
+                reachable,
+                key=lambda r: self.get_f(source, r[1])
+            )
+
         current = final_move
         while self.start_hub != current[1]:
             self.path.append(current)

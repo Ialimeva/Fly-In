@@ -12,6 +12,7 @@ class MetaData(BaseModel, extra="forbid"):
     color: str | None = Field(default=None)
     max_drones: int = Field(default=1, gt=0)
 
+
 class Hub(BaseModel, extra="forbid"):
     type: Literal[
         "start_hub",
@@ -23,10 +24,12 @@ class Hub(BaseModel, extra="forbid"):
     y: int = Field(le=100)
     metadata: MetaData = Field(default=MetaData())
 
+
 class Connection(BaseModel, extra="forbid"):
     name1: str
     name2: str
     max_link_capacity: int = Field(default=1, gt=0)
+
 
 class Map(BaseModel, extra="forbid"):
     nb_drones: int = Field(default=1, gt=0, le=1000)

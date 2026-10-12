@@ -71,7 +71,7 @@ class Parser:
             self.hubs[hub["name"]] = Hub(**hub)
 
         return self.hubs
-            
+
     def validate_connextions(self) -> dict[str, Connection]:
         for connection in self.raw_connections:
             name1: str = connection["name1"]
@@ -95,17 +95,16 @@ class Parser:
             for conn in (edge, duplicate):
                 if conn in self.connections:
                     raise Exception(f"Duplicate connection {edge}")
-            
+
             if not connection["max_link_capacity"]:
                 connection.pop("max_link_capacity")
-            
+
             if max_link_capacity and "-" in max_link_capacity:
                 raise Exception("Link capacity must be positive int")
-            
-            self.connections[edge] = Connection(**connection)
-        
-        return self.connections
 
+            self.connections[edge] = Connection(**connection)
+
+        return self.connections
 
     def validate_map(self) -> Map:
         nb_drones: int = self.validate_nb_drones()

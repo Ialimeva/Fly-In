@@ -67,7 +67,6 @@ class Simulation:
 
         return self.actions_per_turn
 
-# TODO: Change the output to follow the subject
     def output_format(
         self,
         joint_plan: dict[int, Any],

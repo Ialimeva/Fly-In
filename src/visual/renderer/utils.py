@@ -17,17 +17,3 @@ class Utils:
         except ValueError:
             return None
 
-    def tint(self, img: Any, color: Any) -> Any:
-        """Return a copy of img multiplied by color (alpha preserved).
-
-        The color is lifted a bit towards white so dark colors
-        (black, navy...) don't turn the sprite into an invisible blob.
-        """
-        lifted = color.lerp(pygame.Color(255, 255, 255), 0.25)
-        tinted: Any = img.copy()
-        tinted.fill(
-            (lifted.r, lifted.g, lifted.b, 255),
-            special_flags=pygame.BLEND_RGBA_MULT
-        )
-
-        return tinted

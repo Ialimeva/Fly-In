@@ -60,6 +60,5 @@ class Visual:
         )
 
     def start(self) -> None:
-        # actions_per_turn is filled by Simulation after __init__.
         self.drones_renderer.build_timeline()
         self.engine.event_loop()
