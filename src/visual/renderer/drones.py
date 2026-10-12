@@ -44,7 +44,7 @@ class DronesRenderer:
         self.paused: bool = False
         self.speeds: tuple[float, ...] = (0.25, 0.5, 1.0, 2.0, 4.0)
         self.speed_index: int = 2
-    
+
     def ease(self, f: float) -> float:
         return f * f * (3 - 2 * f)
 
@@ -150,7 +150,13 @@ class DronesRenderer:
         self.paused = True
 
     def change_speed(self, delta: int) -> None:
-        self.speed_index = max(0, min(len(self.speeds) - 1, self.speed_index + delta))
+        self.speed_index = max(
+            0,
+            min(
+                len(self.speeds) - 1,
+                self.speed_index + delta
+            )
+        )
 
     def update(self, dt: float) -> None:
         if self.paused:

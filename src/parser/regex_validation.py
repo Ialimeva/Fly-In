@@ -37,7 +37,7 @@ class RegexValidator:
                 }
                 if len(file_content) == 0:
                     raise Exception("No data to extract from file")
-            
+
             return file_content
 
         except Exception as e:
@@ -92,14 +92,14 @@ class RegexValidator:
 
     def validate_file_content(self) -> tuple[Any, ...]:
         self.file_content: dict[int, str] = self.read_map()
-        
+
         nb_drone_line_count: int = 0
         self.nb_drones: dict[str, str] | None = None
 
         for line_number, line in self.file_content.items():
             if (
                 list(self.file_content)[0] == line_number
-                and (match:= re.match("".join(self.nb_drones_regex), line))
+                and (match := re.match("".join(self.nb_drones_regex), line))
             ):
                 nb_drone_line_count += 1
                 if nb_drone_line_count > 1:
@@ -132,12 +132,12 @@ class RegexValidator:
                             f"  Line content : {line!r}\n"
                             f"  Reason       : Unknown zone metadata"
                         )
-                    
+
                     elements["metadata"] = metadata
 
                 self.raw_hubs.append(elements)
-            
-            elif match:= re.match(
+
+            elif match := re.match(
                 "".join(self.connection_regex),
                 line
             ):
@@ -149,7 +149,7 @@ class RegexValidator:
                     f"  Line content : {line!r}\n"
                     f"  Reason       : Unrecognized syntax"
                 )
-        
+
         components: list[tuple[Any, str]] = [
             (self.nb_drones, "nb_drones"),
             (self.raw_hubs, "hubs"),

@@ -80,7 +80,6 @@ class Simulation:
                 print(f"D{action['D']}-{action['target']}", end=" ")
             print()
 
-
     def run(self) -> None:
         joint_plan, reservation_table = self.mapf.cooperative_astar(
             self.map.nb_drones

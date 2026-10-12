@@ -57,7 +57,10 @@ class Engine:
                     self.quit()
                 elif event.type == pygame.KEYDOWN:
                     self.handle_key(event.key)
-                elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                elif (
+                    event.type == pygame.MOUSEBUTTONDOWN
+                    and event.button == 1
+                ):
                     dragging = not self.hud.handle_click(event.pos)
                 elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                     dragging = False

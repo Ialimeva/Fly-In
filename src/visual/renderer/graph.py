@@ -101,7 +101,7 @@ class GraphRenderer:
 
         for edge_name, edge in self.edges.items():
             node1 = self.nodes[edge.name1]
-            node2= self.nodes[edge.name2]
+            node2 = self.nodes[edge.name2]
 
             start_x = (
                 (node1.x - min(self.xs)) *

@@ -54,8 +54,17 @@ class Hud:
             self._bg[key] = surf
         self.window.blit(self._bg[key], rect.topleft)
 
-    def text(self, font: Any, msg: str, color: Any, pos: tuple[int, int]) -> None:
-        self.window.blit(font.render(msg, True, (0, 0, 0)), (pos[0] + 1, pos[1] + 1))
+    def text(
+        self,
+        font: Any,
+        msg: str,
+        color: Any,
+        pos: tuple[int, int]
+    ) -> None:
+        self.window.blit(
+            font.render(msg, True, (0, 0, 0)),
+            (pos[0] + 1, pos[1] + 1)
+        )
         self.window.blit(font.render(msg, True, color), pos)
 
     def icon(self, name: str, rect: Any) -> None:
@@ -74,19 +83,35 @@ class Hud:
         elif name == "prev":
             pygame.draw.rect(w, (255, 255, 255), (cx - 11, cy - 10, 3, 20))
             pygame.draw.polygon(
-                w, (255, 255, 255), [(cx + 10, cy - 10), (cx + 10, cy + 10), (cx - 6, cy)]
+                w, (255, 255, 255), [
+                    (cx + 10, cy - 10),
+                    (cx + 10, cy + 10),
+                    (cx - 6, cy)
+                ]
             )
         elif name == "next":
             pygame.draw.rect(w, (255, 255, 255), (cx + 8, cy - 10, 3, 20))
             pygame.draw.polygon(
-                w, (255, 255, 255), [(cx - 10, cy - 10), (cx - 10, cy + 10), (cx + 6, cy)]
+                w, (255, 255, 255), [
+                    (cx - 10, cy - 10),
+                    (cx - 10, cy + 10),
+                    (cx + 6, cy)
+                ]
             )
         elif name == "restart":
             pygame.draw.arc(
-                w, (255, 255, 255), pygame.Rect(cx - 10, cy - 10, 20, 20), 0.9, 6.0, 3
+                w, (255, 255, 255), pygame.Rect(
+                    cx - 10,
+                    cy - 10,
+                    20, 20
+                ), 0.9, 6.0, 3
             )
             pygame.draw.polygon(
-                w, (255, 255, 255), [(cx + 3, cy - 14), (cx + 3, cy - 4), (cx + 12, cy - 9)]
+                w, (255, 255, 255), [
+                    (cx + 3, cy - 14),
+                    (cx + 3, cy - 4),
+                    (cx + 12, cy - 9)
+                ]
             )
         elif name == "slower":
             pygame.draw.rect(w, (255, 255, 255), (cx - 9, cy - 2, 18, 4))
@@ -101,7 +126,13 @@ class Hud:
         for name, rect in self.buttons.items():
             self.panel(rect, 200)
             if rect.collidepoint(mouse):
-                pygame.draw.rect(self.window, (255, 255, 255), rect, 2, border_radius=12)
+                pygame.draw.rect(
+                    self.window,
+                    (255, 255, 255),
+                    rect,
+                    2,
+                    border_radius=12
+                )
             self.icon(name, rect)
 
         self.draw_info()
@@ -114,7 +145,12 @@ class Hud:
         r: Any = self.info_rect
         self.panel(r)
 
-        self.text(self.font_big, f"Turn {d.display_turn} / {d.max_turn}", (255, 255, 255), (r.x + 10, r.y + 8))
+        self.text(
+            self.font_big,
+            f"Turn {d.display_turn} / {d.max_turn}",
+            (255, 255, 255),
+            (r.x + 10, r.y + 8)
+        )
 
         if d.finished:
             status, color = "FINISHED (press R)", (110, 230, 140)
@@ -126,10 +162,25 @@ class Hud:
         k: int = int(d.time)
         if not d.finished and d.time - k > 1e-6:
             extra = f"  {k}->{k + 1}  {int((d.time - k) * 100)}%"
-        self.text(self.font, f"{status}  x{d.speed:g}{extra}", color, (r.x + 10, r.y + 40))
+        self.text(
+            self.font,
+            f"{status}  x{d.speed:g}{extra}",
+            color,
+            (r.x + 10, r.y + 40)
+        )
 
-        self.text(self.font_small, "SPACE pause | , . step | R restart", (170, 175, 190), (r.x + 10, r.y + 66))
-        self.text(self.font_small, "+/- speed | arrows or drag: pan", (170, 175, 190), (r.x + 10, r.y + 84))
+        self.text(
+            self.font_small,
+            "SPACE pause | , . step | R restart",
+            (170, 175, 190),
+            (r.x + 10, r.y + 66)
+        )
+        self.text(
+            self.font_small,
+            "+/- speed | arrows or drag: pan",
+            (170, 175, 190),
+            (r.x + 10, r.y + 84)
+        )
 
     def draw_bar(self) -> None:
         d: Any = self.drones
@@ -143,9 +194,20 @@ class Hud:
         if 0 < d.max_turn <= 100:
             for t in range(d.max_turn + 1):
                 x: int = bar.x + int(bar.w * t / d.max_turn)
-                pygame.draw.line(self.window, (255, 255, 255), (x, bar.y + 12), (x, bar.bottom - 1), 1)
+                pygame.draw.line(
+                    self.window,
+                    (255, 255, 255),
+                    (x, bar.y + 12),
+                    (x, bar.bottom - 1),
+                    1
+                )
 
-        pygame.draw.circle(self.window, (255, 255, 255), (bar.x + int(bar.w * frac), bar.centery), 9)
+        pygame.draw.circle(
+            self.window,
+            (255, 255, 255),
+            (bar.x + int(bar.w * frac), bar.centery),
+            9
+        )
 
     def draw_moves(self) -> None:
         d: Any = self.drones
@@ -163,6 +225,16 @@ class Hud:
 
         rect = pygame.Rect(self.w - 316, 16, 300, 38 + 20 * len(lines))
         self.panel(rect)
-        self.text(self.font, f"Turn {turn} moves", (255, 210, 60), (rect.x + 10, rect.y + 8))
+        self.text(
+            self.font,
+            f"Turn {turn} moves",
+            (255, 210, 60),
+            (rect.x + 10, rect.y + 8)
+        )
         for i, line in enumerate(lines):
-            self.text(self.font_small, line, (255, 255, 255), (rect.x + 10, rect.y + 34 + 20 * i))
+            self.text(
+                self.font_small,
+                line,
+                (255, 255, 255),
+                (rect.x + 10, rect.y + 34 + 20 * i)
+            )

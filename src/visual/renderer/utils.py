@@ -16,4 +16,3 @@ class Utils:
             return pygame.Color(name.lower())
         except ValueError:
             return None
-
