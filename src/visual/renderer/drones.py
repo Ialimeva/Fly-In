@@ -195,7 +195,7 @@ class DronesRenderer:
         if k >= self.max_turn:
             k2, s = k, 0.0
         else:
-            k2, s = k + 1, self.self.ease(self.time - k)
+            k2, s = k + 1, self.ease(self.time - k)
 
         win_w, win_h = self.window.get_size()
         items: list[tuple[float, int, float, float, float]] = []
