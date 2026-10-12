@@ -150,7 +150,7 @@ class DronesRenderer:
         self.paused = True
 
     def change_speed(self, delta: int) -> None:
-        self.speed_index = max(0, min(len(SPEEDS) - 1, self.speed_index + delta))
+        self.speed_index = max(0, min(len(self.speeds) - 1, self.speed_index + delta))
 
     def update(self, dt: float) -> None:
         if self.paused:
