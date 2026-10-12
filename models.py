@@ -1,8 +1,27 @@
+"""Map structure definitions.
+
+This module defines the core data classes for representing map structures, 
+including the map itself, hubs, connections, and metadata.
+
+Exported Classes:
+    Map: Represents the overall map structure.
+    Hub: Represents a node or hub within the map.
+    Connection: Represents a link or edge between hubs.
+    Metadata: Represents descriptive metadata for the map.
+"""
 from pydantic import BaseModel, Field
 from typing import Literal
 
 
 class MetaData(BaseModel, extra="forbid"):
+    """
+    Represents the overall map structure.
+
+    Attributes:
+        zone (str): Given zone type of a hub
+        color (str): Given color of a hub
+        max_drones (int): Maximum drone a hub can contain
+    """
     zone: Literal[
         "normal",
         "blocked",

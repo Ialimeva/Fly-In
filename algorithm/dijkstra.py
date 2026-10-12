@@ -1,4 +1,4 @@
-from ..models import Hub
+from models import Hub
 from .graph import MakeGraph
 from typing import Any
 

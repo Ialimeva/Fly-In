@@ -19,7 +19,7 @@ class GetMapPath:
 
     def get_map_path(self) -> Any:
         level: str = self.get_level()
-        dir: str = "src/maps/"
+        dir: str = "maps/"
         if level == "custom map":
             self.map_path = questionary.path(
                 "What's the path of your custom map?" +

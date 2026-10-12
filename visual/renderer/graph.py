@@ -1,7 +1,7 @@
 import pygame
 from typing import Any
 from .utils import Utils
-from ...models import Hub, Connection
+from models import Hub, Connection
 
 
 class GraphRenderer:
@@ -35,7 +35,7 @@ class GraphRenderer:
             "blocked"
         ):
             raw_img = pygame.image.load(
-                f"src/visual/assets/zones/{zone}.png"
+                f"visual/assets/zones/{zone}.png"
             ).convert_alpha()
 
             w, h = raw_img.get_rect().size

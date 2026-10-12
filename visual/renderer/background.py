@@ -12,7 +12,7 @@ class BackgroundRenderer:
         self.backs: list[Any] = []
         for i in range(1, 155):
             raw: Any = pygame.image.load(
-                f"src/visual/assets/background/{i}.jpg"
+                f"visual/assets/background/{i}.jpg"
             ).convert()
             raw = self.utils.scale_img(raw, (self.window_w, self.window_h))
             self.backs.append(raw)

@@ -1,4 +1,4 @@
-from .simulation import Simulation
+from simulation import Simulation
 from pydantic import ValidationError
 
 

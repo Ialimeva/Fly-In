@@ -1,4 +1,4 @@
-from ..models import Hub, Connection
+from models import Hub, Connection
 from .graph import MakeGraph
 from typing import Any
 

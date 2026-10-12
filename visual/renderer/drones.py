@@ -13,7 +13,7 @@ class DronesRenderer:
         utils: Utils
     ) -> None:
         raw_img: Any = pygame.image.load(
-            "src/visual/assets/drone.png"
+            "visual/assets/drone.png"
         ).convert_alpha()
         tile_size: int = 32
 
