@@ -11,7 +11,7 @@ class Utils:
 
         return img.subsurface(bound).copy()
 
-    def parse_color(self, name: str | None) -> Any | None:
+    def parse_color(self, name: Any) -> Any | None:
         try:
             return pygame.Color(name.lower())
         except ValueError:

@@ -1,4 +1,4 @@
-from ..models import Map, Hub, Connection, MetaData
+from models import Map, Hub, Connection, MetaData
 from .get_map_path import GetMapPath
 from .regex_validation import RegexValidator
 from typing import Any
@@ -54,7 +54,7 @@ class Parser:
 
             if hub["metadata"]:
                 metadata: dict[str, Any] = hub["metadata"]
-                hub["metadata"]: MetaData = MetaData(**metadata)
+                hub["metadata"] = MetaData(**metadata)
 
             else:
                 hub.pop("metadata")
@@ -65,7 +65,7 @@ class Parser:
                     hub["metadata"].max_drones = nb_drones
                 else:
                     hub["metadata"] = MetaData(
-                        max_drones=self.nb_drones
+                        max_drones=nb_drones
                     )
 
             self.hubs[hub["name"]] = Hub(**hub)

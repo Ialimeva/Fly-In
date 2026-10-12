@@ -5,7 +5,7 @@ from typing import Any
 class RegexValidator:
     def __init__(self, map_path: str) -> None:
         self.map_path: str = map_path
-        self.nb_drones_regex: tuple[str] = (
+        self.nb_drones_regex: str = (
             r"^nb_drones:\s+(?P<nb_drones>\d+)$"
         )
         self.hub_regex: tuple[str, ...] = (
@@ -47,7 +47,7 @@ class RegexValidator:
         self,
         line_number: int,
         line: str,
-        metadata_str: str,
+        metadata_str: Any,
         metadata: dict[str, Any]
     ) -> None:
         metadata_str = metadata_str.split()
@@ -109,7 +109,7 @@ class RegexValidator:
                         f"  Reason       : Duplicate nb_drones"
                     )
 
-                self.nb_drones: dict[str, str] = match.groupdict()
+                self.nb_drones = match.groupdict()
 
             elif match := re.match("".join(self.hub_regex), line):
                 elements: dict[str, Any] = match.groupdict()

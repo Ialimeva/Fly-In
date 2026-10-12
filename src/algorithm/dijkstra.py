@@ -1,4 +1,4 @@
-from ..models import Hub
+from models import Hub
 from .graph import MakeGraph
 from typing import Any
 
@@ -44,9 +44,9 @@ class Dijkstra:
                     if zone == "blocked":
                         continue
                     if zone == "priority":
-                        weight: int = self.nodes_distances[current_node] + 0.5
+                        weight = self.nodes_distances[current_node] + 0.5
                     else:
-                        weight: int = self.nodes_distances[current_node] + 1
+                        weight = self.nodes_distances[current_node] + 1
                 estimated_weight: int = self.nodes_distances[node]
 
                 if weight < estimated_weight:

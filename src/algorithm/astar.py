@@ -1,4 +1,4 @@
-from ..models import Hub, Connection
+from models import Hub, Connection
 from .graph import MakeGraph
 from typing import Any
 
@@ -6,22 +6,22 @@ from typing import Any
 class Astar:
     def __init__(
         self,
-        node_distances: dict[str, int],
+        node_distances: dict[str, int | float],
         graph: MakeGraph
     ) -> None:
-        self.node_distances: dict[str, int] = node_distances
+        self.node_distances: dict[str, int | float] = node_distances
         self.graph: MakeGraph = graph
         self.nodes: dict[str, Hub] = self.graph.nodes
         self.edges: dict[str, Connection] = self.graph.edges
         self.start_hub, self.end_hub = self.graph.get_endpoints()
         self.neighbors: dict[str, set[str]] = self.graph.get_graph()
-        self.cost_so_far: dict[str, int] = {
+        self.cost_so_far: dict[str, int | float] = {
             k: 0 if k == self.start_hub else float("inf")
             for k in self.neighbors
         }
         self.came_from: dict[Any, Any] = {}
 
-    def get_duration(self, neighbor: str) -> float:
+    def get_duration(self, neighbor: str) -> int | float:
         if "-" in neighbor:
             return 1
 
@@ -36,8 +36,8 @@ class Astar:
         turn: int,
         source: str,
         target: str,
-        reservation_table: list[tuple[str, int]]
-    ) -> int:
+        reservation_table: list[tuple[Any, ...]]
+    ) -> tuple[int, int]:
         zone_used: int = len(
             [
                 dest for _, dest, t in reservation_table
@@ -68,32 +68,35 @@ class Astar:
             edge_capacity
         )
 
-    def get_g(self, current: str, neighbor: str) -> float:
-        g: int = self.cost_so_far[current] + self.get_duration(neighbor)
+    def get_g(self, current: str, neighbor: str) -> int | float:
+        g: int | float = (
+            self.cost_so_far[current] +
+            self.get_duration(neighbor)
+        )
         return g
 
-    def get_h(self, neighbor: str) -> int:
+    def get_h(self, neighbor: str) -> int | float:
         return self.node_distances[neighbor]
 
     def get_f(self, current: str, neighbor: str) -> float:
         g: float = self.get_g(current, neighbor)
-        h: int = self.get_h(neighbor)
+        h: int | float = self.get_h(neighbor)
 
         return g + h
 
     def path_to_goal(
         self,
         nb_drone: int,
-        reservation_table: list[tuple[str, int]]
+        reservation_table: list[tuple[Any, ...]]
     ) -> list[str]:
-        self.path: list[str] = []
-        reachable: list[tuple[int, str, int]] = []
+        self.path: list[Any] = []
+        reachable: list[tuple[Any, ...]] = []
         explored: set[Any] = set()
         reachable.append((None, self.start_hub, 0))
-        final_move: tuple[str, int] = ()
+        final_move: tuple[Any, ...] = ()
 
         while reachable:
-            current: str = reachable.pop(0)
+            current: tuple[Any, ...] = reachable.pop(0)
             if current in explored:
                 continue
             _, source, t_source = current
@@ -102,14 +105,14 @@ class Astar:
                 final_move = current
                 break
 
-            moves: list[tuple[str, int]] = [(source, source, 1)] + [
+            moves: list[tuple[Any, ...]] = [(source, source, 1)] + [
                 (source, neighbor, self.get_duration(neighbor))
                 for neighbor in self.neighbors[source]
             ]
 
             for _, target, duration in moves:
                 t_target: int = t_source + duration
-                next_move: tuple[str, int] = (source, target, t_target)
+                next_move: tuple[Any, ...] = (source, target, t_target)
 
                 if next_move in explored:
                     continue
@@ -128,8 +131,8 @@ class Astar:
 
             for move in reachable:
                 _, target, t = move
-                weight: int = self.get_g(source, target)
-                estimated_weight: int = self.cost_so_far[target]
+                weight: int | float = self.get_g(source, target)
+                estimated_weight: int | float = self.cost_so_far[target]
                 if weight < estimated_weight:
                     self.cost_so_far[target] = weight
 

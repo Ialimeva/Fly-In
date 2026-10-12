@@ -1,4 +1,5 @@
 import questionary
+from typing import Any
 
 
 class GetMapPath:
@@ -16,7 +17,7 @@ class GetMapPath:
 
         return level
 
-    def get_map_path(self) -> str:
+    def get_map_path(self) -> Any:
         level: str = self.get_level()
         dir: str = "src/maps/"
         if level == "custom map":

@@ -1,4 +1,4 @@
-from ..models import Map, Hub, Connection
+from models import Map, Hub, Connection
 
 
 class MakeGraph:
@@ -17,7 +17,7 @@ class MakeGraph:
             for edge in self.edges
         }
 
-    def get_endpoints(self) -> None:
+    def get_endpoints(self) -> tuple[str, str]:
         for k, v in self.nodes.items():
             if v.type == "start_hub":
                 self.start_hub: str = k
@@ -33,7 +33,6 @@ class MakeGraph:
                 if self.edges[edge].name1 == node:
                     neighbor: str = self.edges[edge].name2
                     if self.nodes[neighbor].metadata.zone == "restricted":
-                        edge: str = node + "-" + neighbor
                         self.neighbors[node].add(edge)
                         self.neighbors[neighbor].add(edge)
                         if edge not in neighbor:

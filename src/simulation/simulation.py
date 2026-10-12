@@ -1,7 +1,7 @@
-from ..models import Map
-from ..parser import Parser
-from ..algorithm import MakeGraph, Dijkstra, Astar, Mapf
-from ..visual import Visual
+from models import Map
+from parser import Parser
+from algorithm import MakeGraph, Dijkstra, Astar, Mapf
+from visual import Visual
 from typing import Any
 
 
@@ -53,7 +53,7 @@ class Simulation:
                     if "-" in target:
                         base_capacity: int = self.graph.link_capacity[target]
                     else:
-                        base_capacity: int = self.graph.zone_capacity[target]
+                        base_capacity = self.graph.zone_capacity[target]
                     used_capacity: int = base_capacity - free_capacity
                     capacity = f"{used_capacity}/{base_capacity}"
                 self.actions_per_turn[turn].append(
