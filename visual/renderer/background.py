@@ -1,9 +1,31 @@
+"""
+Render animated background.
+
+This module load and animate images to use
+as bakground.
+
+Exported class:
+    BackgroundRenderer: Render animated background.
+"""
 import pygame
 from typing import Any
 from .utils import Utils
 
 
 class BackgroundRenderer:
+    """
+    Render animated background.
+
+    Attributes:
+        utils: Render utilities.
+        window: Pygame window instance.
+        window_w: Window width.
+        window_h: WIndow height.
+        backs: Loaded background image frames.
+        frame_index: Index pf a frame.
+        frame_duration: Duration of a frame.
+        last_switch: Last time frame was changed.
+    """
     def __init__(self, utils: Utils, window: Any) -> None:
         self.utils: Utils = utils
         self.window: Any = window
@@ -22,11 +44,13 @@ class BackgroundRenderer:
         self.last_switch: int = pygame.time.get_ticks()
 
     def draw(self) -> None:
+        """Render frame unto window."""
         frame: Any = self.backs[self.frame_index]
 
         self.window.blit(frame, (0, 0))
 
     def animate(self) -> None:
+        """Choose frame to render."""
         now: int = pygame.time.get_ticks()
         if now - self.last_switch > self.frame_duration:
             self.frame_index = (self.frame_index + 1) % len(self.backs)

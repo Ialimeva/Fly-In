@@ -1,8 +1,35 @@
+"""
+Playback controls drawn above the animation.
+
+This module draws and handles everything the user can use to
+control the playback: buttons, turn information, the moves of the
+paused turn and the progress bar.
+
+Extracted class:
+    Hud: Draw the controls and handle clicks on them.
+"""
 import pygame
 from typing import Any
 
 
 class Hud:
+    """
+    Draw the playback controls and handle clicks on them.
+
+    Attributes:
+        window: Pygame window.
+        drones: Drones renderer, source of the playback state.
+        w: Window width.
+        h: Window height.
+        font_big: Font of the turn number.
+        font: Font of the status.
+        font_small: Font of the help and the moves.
+        buttons: Rectangle of each button, by name.
+        info_rect: Rectangle of the turn information panel.
+        bar: Rectangle of the progress bar at the bottom of the window,
+        created here and drawn each frame by draw_bar.
+        _bg: Cache of the translucent panel backgrounds.
+    """
     def __init__(self, window: Any, drones: Any) -> None:
         self.window: Any = window
         self.drones: Any = drones
@@ -23,6 +50,7 @@ class Hud:
         self._bg: dict[tuple[int, int, int], Any] = {}
 
     def handle_click(self, pos: tuple[int, int]) -> bool:
+        """Run the clicked button or seek a turn, True if on the hud."""
         d: Any = self.drones
         actions: dict[str, Any] = {
             "prev": lambda: d.step(-1),
@@ -37,14 +65,10 @@ class Hud:
                 actions[name]()
                 return True
 
-        if self.bar.inflate(0, 16).collidepoint(pos):
-            frac: float = (pos[0] - self.bar.x) / max(1, self.bar.w)
-            d.seek(frac * d.max_turn)
-            return True
-
         return self.info_rect.collidepoint(pos)
 
     def panel(self, rect: Any, alpha: int = 165) -> None:
+        """Draw a translucent rounded background, cached."""
         key = (rect.w, rect.h, alpha)
         if key not in self._bg:
             surf = pygame.Surface(rect.size, pygame.SRCALPHA)
@@ -61,6 +85,7 @@ class Hud:
         color: Any,
         pos: tuple[int, int]
     ) -> None:
+        """Draw a text with a shadow."""
         self.window.blit(
             font.render(msg, True, (0, 0, 0)),
             (pos[0] + 1, pos[1] + 1)
@@ -68,6 +93,7 @@ class Hud:
         self.window.blit(font.render(msg, True, color), pos)
 
     def icon(self, name: str, rect: Any) -> None:
+        """Draw the icon of a button."""
         w: Any = self.window
         cx, cy = rect.center
         d: Any = self.drones
@@ -120,6 +146,7 @@ class Hud:
             pygame.draw.rect(w, (255, 255, 255), (cx - 2, cy - 9, 4, 18))
 
     def draw(self) -> None:
+        """Draw buttons, information, progress bar and paused moves."""
         d: Any = self.drones
         mouse: tuple[int, int] = pygame.mouse.get_pos()
 
@@ -136,11 +163,11 @@ class Hud:
             self.icon(name, rect)
 
         self.draw_info()
-        self.draw_bar()
         if d.paused:
             self.draw_moves()
 
     def draw_info(self) -> None:
+        """Draw the turn, status, speed and keyboard help."""
         d: Any = self.drones
         r: Any = self.info_rect
         self.panel(r)
@@ -183,6 +210,7 @@ class Hud:
         )
 
     def draw_bar(self) -> None:
+        """Draw the progress bar, turn marks and handle from time."""
         d: Any = self.drones
         bar: Any = self.bar
         self.panel(bar.inflate(8, 8), 170)
@@ -210,6 +238,7 @@ class Hud:
         )
 
     def draw_moves(self) -> None:
+        """Draw the list of moves of the paused turn."""
         d: Any = self.drones
         turn: int = d.display_turn
         moves = d.moves(turn)

@@ -1,11 +1,11 @@
 """Map structure definitions.
 
-This module defines the core data classes for representing map structures, 
+This module defines the core data classes for representing map structures,
 including the map itself, hubs, connections, and metadata.
 
 Exported Classes:
-    Map: Represents the overall map structure.
     Hub: Represents a node or hub within the map.
+    Map: Represents the overall map structure.
     Connection: Represents a link or edge between hubs.
     Metadata: Represents descriptive metadata for the map.
 """
@@ -15,7 +15,7 @@ from typing import Literal
 
 class MetaData(BaseModel, extra="forbid"):
     """
-    Represents the overall map structure.
+    Represents descriptive metadata for the map.
 
     Attributes:
         zone (str): Given zone type of a hub
@@ -33,6 +33,12 @@ class MetaData(BaseModel, extra="forbid"):
 
 
 class Hub(BaseModel, extra="forbid"):
+    """
+    Represents a node or hub within the map.
+
+    This class reperesents a nodes or zone with it's informations
+    including name, coordinates and metadata.
+    """
     type: Literal[
         "start_hub",
         "end_hub",
@@ -45,12 +51,26 @@ class Hub(BaseModel, extra="forbid"):
 
 
 class Connection(BaseModel, extra="forbid"):
+    """
+    Represents a link or edge between hubs.
+
+    This class reperesents a link or egde with it's informations
+    including name1(the right end), name2(the left end) and
+    max_link_capacity(the max drone the link can contain).
+    """
     name1: str
     name2: str
     max_link_capacity: int = Field(default=1, gt=0)
 
 
 class Map(BaseModel, extra="forbid"):
+    """
+    Represents the overall map structure.
+
+    This class reperesents the map with it's informations
+    including nb_drones(number of drones in the map),
+    hubs(nodes of the map) and connections(edges of the map).
+    """
     nb_drones: int = Field(default=1, gt=0, le=1000)
     hubs: dict[str, Hub] = {}
     connections: dict[str, Connection] = {}

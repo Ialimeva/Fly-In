@@ -1,11 +1,35 @@
+"""
+Event listener of visual.
+
+This module is the event listener of visual where
+the event loop starts.
+
+Exported class:
+    Engine: Event listener of visual.
+"""
 import pygame
 from typing import Any
 from ..renderer import (
-    GraphRenderer, Camera, BackgroundRenderer, DronesRenderer, Hud
+    GraphRenderer,
+    Camera,
+    BackgroundRenderer,
+    DronesRenderer,
+    Hud
 )
 
 
 class Engine:
+    """
+    Event listener of visual.
+    
+    Attributes:
+        graph_renderer: Graph renderer.
+        background_renderer: Background renderer.
+        drone_renderer: Drones renderer.
+        camera: Camera simulator.
+        hud: Hud renderer.
+        window: Pygame window.
+    """
     def __init__(
         self,
         graph_renderer: GraphRenderer,
@@ -23,10 +47,12 @@ class Engine:
         self.window: Any = window
 
     def quit(self) -> None:
+        """Quit event loop and window."""
         pygame.quit()
         raise SystemExit
 
     def handle_key(self, key: int) -> None:
+        """Compute keyboard inputs."""
         d: DronesRenderer = self.drone_renderer
         if key == pygame.K_ESCAPE:
             self.quit()
@@ -44,6 +70,7 @@ class Engine:
             d.change_speed(-1)
 
     def event_loop(self) -> None:
+        """Event loop."""
         pygame.display.set_caption("FLY-IN")
         clock: Any = pygame.time.Clock()
         cam_x, cam_y = (0, 0)

@@ -1,7 +1,26 @@
+"""
+Make graph from Map instance.
+
+This module takes the Map instance and creates a graph
+for the program to use.
+
+Exported class:
+    MakeGraph: Graph makes.
+"""
 from models import Map, Hub, Connection
 
 
 class MakeGraph:
+    """
+    Make graph from Map instance.
+
+    Attributes:
+        nodes: Map hubs.
+        edges: Map connections.
+        neighbors: Each nodes and edges neighbors.
+        zone_capacity: Each nodes capacity.
+        link_capacity: Each edges capacity.
+    """
     def __init__(self, map: Map) -> None:
         self.nodes: dict[str, Hub] = map.hubs
         self.edges: dict[str, Connection] = map.connections
@@ -18,6 +37,7 @@ class MakeGraph:
         }
 
     def get_endpoints(self) -> tuple[str, str]:
+        """Return start and end points of map."""
         for k, v in self.nodes.items():
             if v.type == "start_hub":
                 self.start_hub: str = k
@@ -28,6 +48,7 @@ class MakeGraph:
         return (self.start_hub, self.end_hub)
 
     def get_graph(self) -> dict[str, set[str]]:
+        """Return full graph representation."""
         for node in self.nodes:
             for edge in self.edges:
                 if self.edges[edge].name1 == node:

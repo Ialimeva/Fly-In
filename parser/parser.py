@@ -1,3 +1,11 @@
+"""
+Map parser.
+
+This module parse map file to an instance of Map.
+
+Exported class:
+    Parser: Parse map file to a Map instance.
+"""
 from models import Map, Hub, Connection, MetaData
 from .get_map_path import GetMapPath
 from .regex_validation import RegexValidator
@@ -5,6 +13,16 @@ from typing import Any
 
 
 class Parser:
+    """
+    Parse map file to a Map instance.
+
+    Attributes:
+        map_getter: Get map path.
+        map_path: Map path.
+        regex_validator: Validate map content.
+        hubs: Validated hubs or nodes.
+        connections: Validated links or edges.
+    """
     def __init__(self) -> None:
         self.map_getter: GetMapPath = GetMapPath()
         self.map_path: str = self.map_getter.get_map_path()
@@ -19,12 +37,14 @@ class Parser:
         self.connections: dict[str, Connection] = {}
 
     def validate_nb_drones(self) -> int:
+        """Parse and return drone numbers"""
         nb_drones: int = int(self.raw_nb_drones["nb_drones"])
         if nb_drones > 0:
             return nb_drones
         return 1
 
     def validate_hubs(self) -> dict[str, Hub]:
+        """Validate and return hubs"""
         coords: set[tuple[int, int]] = set()
         count_start: int = 0
         count_end: int = 0
@@ -73,6 +93,7 @@ class Parser:
         return self.hubs
 
     def validate_connextions(self) -> dict[str, Connection]:
+        """Validate and return connections."""
         for connection in self.raw_connections:
             name1: str = connection["name1"]
             name2: str = connection["name2"]
@@ -107,6 +128,7 @@ class Parser:
         return self.connections
 
     def validate_map(self) -> Map:
+        """Call each verification methods and return Map instance."""
         nb_drones: int = self.validate_nb_drones()
         hubs: dict[str, Hub] = self.validate_hubs()
         connections: dict[str, Connection] = self.validate_connextions()

@@ -1,9 +1,17 @@
+"""
+Parse map path from user input.
+
+Exported class:
+    GetMapPath: map path getter.
+"""
 import questionary
 from typing import Any
 
 
 class GetMapPath:
+    """Parse map path from user input."""
     def get_level(self) -> str:
+        """Prompt the user to choose a level"""
         level: str = questionary.select(
             "Choose difficulty:",
             choices=[
@@ -18,6 +26,7 @@ class GetMapPath:
         return level
 
     def get_map_path(self) -> Any:
+        """Prompt the user to choose a map and return the full path"""
         level: str = self.get_level()
         dir: str = "maps/"
         if level == "custom map":

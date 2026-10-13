@@ -1,9 +1,32 @@
+"""
+Compute drone's path from start to goal.
+
+This module define the astar pathfinder algorithm
+to return a drone path.
+
+Exported class:
+    Astar: Compute astar algorithm on a drone.
+"""
 from models import Hub, Connection
 from .graph import MakeGraph
 from typing import Any
 
 
 class Astar:
+    """
+    Compute astar algorithm on a drone.
+
+    Attributes:
+        node_distances: Astar heuristic values.
+        graph: Graph make instance.
+        nodes: Map nodes or hubs.
+        edges: Map links or connections.
+        start_hub: Map start point.
+        end_hub: Map end point.
+        neighbors: Each nodes and edges neighbors.
+        cost_so_far: Each nodes and edges cost.
+        came_from: Each nodes and edges parent.
+    """
     def __init__(
         self,
         node_distances: dict[str, int | float],
@@ -22,6 +45,7 @@ class Astar:
         self.came_from: dict[Any, Any] = {}
 
     def get_duration(self, neighbor: str) -> int | float:
+        """Get zone movement duration."""
         if "-" in neighbor:
             return 1
 
@@ -38,6 +62,7 @@ class Astar:
         target: str,
         reservation_table: list[tuple[Any, ...]]
     ) -> tuple[int, int]:
+        """Get zone and link remaining capacity."""
         zone_used: int = len(
             [
                 dest for _, dest, t in reservation_table
@@ -69,6 +94,7 @@ class Astar:
         )
 
     def get_g(self, current: str, neighbor: str) -> int | float:
+        """Get real zone or edge cost."""
         g: int | float = (
             self.cost_so_far[current] +
             self.get_duration(neighbor)
@@ -76,9 +102,11 @@ class Astar:
         return g
 
     def get_h(self, neighbor: str) -> int | float:
+        """Get node or edge heuristic value."""
         return self.node_distances[neighbor]
 
     def get_f(self, current: str, neighbor: str) -> float:
+        """Get node or edge score."""
         g: float = self.get_g(current, neighbor)
         h: int | float = self.get_h(neighbor)
 
@@ -89,6 +117,7 @@ class Astar:
         nb_drone: int,
         reservation_table: list[tuple[Any, ...]]
     ) -> list[str]:
+        """Compute drone's full path from start to goal."""
         self.path: list[Any] = []
         reachable: list[tuple[Any, ...]] = []
         explored: set[Any] = set()

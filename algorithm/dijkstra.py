@@ -1,9 +1,27 @@
+"""
+Calculate each nodes and edges distance form goal.
+
+This module takes a graph and calculates each node and
+edge distance from goal.
+
+Exported class:
+    Dijkstra: Calculate each nodes and edges distance form goal.
+"""
 from models import Hub
 from .graph import MakeGraph
 from typing import Any
 
 
 class Dijkstra:
+    """
+    Calculate each nodes and edges distance form goal.
+
+    Attributes:
+        graph: Graph maker instance.
+        nodes: Map nodes or hubs.
+        neighbors: Each nodes and edges neighbors.
+        nodes_distances: Each node and edge distance from goal.
+    """
     def __init__(self, graph: MakeGraph) -> None:
         self.graph: MakeGraph = graph
         self.nodes: dict[str, Hub] = self.graph.nodes
@@ -11,6 +29,7 @@ class Dijkstra:
         self.nodes_distances: dict[str, Any] = {}
 
     def set_starting_distance(self) -> None:
+        """Set each elements estimated distance."""
         self.start_hub, self.end_hub = self.graph.get_endpoints()
         for k in self.neighbors:
             if k == self.end_hub:
@@ -21,6 +40,7 @@ class Dijkstra:
                 self.nodes_distances[k] = float("inf")
 
     def nodes_distance_from_goal(self) -> dict[str, int | float]:
+        """Calculate each nodes and edges distance form goal."""
         self.set_starting_distance()
         reachable: list[str] = []
         explored: set[str] = set()

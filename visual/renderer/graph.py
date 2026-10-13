@@ -1,3 +1,11 @@
+"""
+Static drawing of the map: links, zones, colors and labels.
+
+This module draws the whole graph once on a large buffer surface.
+
+Extracted class:
+    GraphRenderer: Draw the graph buffer and give zones coordinates.
+"""
 import pygame
 from typing import Any
 from .utils import Utils
@@ -5,6 +13,29 @@ from models import Hub, Connection
 
 
 class GraphRenderer:
+    """
+    Draw the graph on a buffer and compute where each zone is.
+
+    Attributes:
+        window: Pygame window.
+        window_w: Window width.
+        window_h: Window height.
+        center_w: Window horizontal center.
+        center_h: Window vertical center.
+        nodes: Zones of the map.
+        edges: Links of the map.
+        utils: Image helpers.
+        edge_w: Horizontal space between two zones.
+        edge_h: Vertical space between two zones.
+        label_h: Height kept under a zone for its label.
+        zones: Zone sprite of each zone type.
+        node_w: Width of a zone.
+        node_h: Height of a zone.
+        xs: Every zone x position in the map.
+        ys: Every zone y position in the map.
+        font: Font used for the zone labels.
+        coordinates: Pixel position of each zone and link.
+    """
     def __init__(
         self,
         window: Any,
@@ -51,6 +82,7 @@ class GraphRenderer:
         self.coordinates: dict[str, Any] = {}
 
     def graph_size(self) -> tuple[int, int]:
+        """Return the width and height of the graph buffer."""
         graph_w: int = (
             (max(self.xs) - min(self.xs)) *
             (self.node_w + self.edge_w) +
@@ -66,6 +98,7 @@ class GraphRenderer:
         return (graph_w, graph_y)
 
     def make_label(self, name: str, node: Hub) -> Any:
+        """Return the name of a zone with its type or capacity."""
         text: str = name
         if node.type == "start_hub":
             text += " (start)"
@@ -93,6 +126,7 @@ class GraphRenderer:
         return label
 
     def draw_graph(self) -> Any:
+        """Draw links and zones on a buffer and return it with coordinates."""
         graph_w, graph_y = self.graph_size()
         buffer: Any = pygame.Surface(
             (graph_w, graph_y),

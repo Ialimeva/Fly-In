@@ -1,8 +1,15 @@
+"""
+Starting point of the program.
+
+This module is the starting point of the program where
+simulation is called and ran.
+"""
 from simulation import Simulation
 from pydantic import ValidationError
 
 
 def main() -> None:
+    """Starting point of the program"""
     try:
         simulation: Simulation = Simulation()
         simulation.run()

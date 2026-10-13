@@ -1,3 +1,13 @@
+"""
+Drone animation and playback timeline.
+
+This module turns the per-turn plan built by the simulation
+(actions_per_turn) into a timeline, then moves each drone smoothly
+from its source zone to its target zone while the visual is running.
+
+Extracted class:
+    DronesRenderer: Build the timeline and draw the drones.
+"""
 import math
 import pygame
 from typing import Any
@@ -5,6 +15,26 @@ from .utils import Utils
 
 
 class DronesRenderer:
+    """
+    Build the drones timeline, control playback and draw the drones.
+
+    Attributes:
+        base_img: Drone sprite cut from the sprite sheet.
+        actions_per_turn: Drones actions organized by turn.
+        coordinates: Position of each zone and link in the graph buffer.
+        window: Pygame window where drones are drawn.
+        utils: Image helpers.
+        font: Font used for the drone labels.
+        node: Size in pixels of a zone.
+        tracks: Zone or link of each drone at each turn.
+        slots: Place of each drone among the drones sharing its zone.
+        max_turn: Last turn of the simulation.
+        time: Playback position in turns, 3.5 is halfway through 3 to 4.
+        anim: Clock of the hover animation, frozen while paused.
+        paused: True when the playback is paused.
+        speeds: Playback speeds available.
+        speed_index: Index of the current speed in speeds.
+    """
     def __init__(
         self,
         actions_per_turn: dict[int, Any],
@@ -46,12 +76,15 @@ class DronesRenderer:
         self.speed_index: int = 2
 
     def ease(self, f: float) -> float:
+        """Smooth a 0 to 1 progress so a move starts and ends slowly."""
         return f * f * (3 - 2 * f)
 
     def lerp(self, a: float, b: float, t: float) -> float:
+        """Return the value between a and b at progress t."""
         return a + (b - a) * t
 
     def spread(self, i: int, n: int) -> tuple[float, float]:
+        """Return the offset of the i-th drone out of n in the same zone."""
         if n <= 1:
             return (0.0, 0.0)
         if n <= 7:
@@ -67,11 +100,13 @@ class DronesRenderer:
         return (22 * ring * math.cos(angle), 22 * ring * math.sin(angle))
 
     def size_for(self, n: int) -> int:
+        """Return the sprite size for n drones sharing a zone."""
         if n <= 1:
             return 64
         return 48 if n <= 7 else 34
 
     def build_timeline(self) -> None:
+        """Build each drone track and zone slots from actions_per_turn."""
         self.max_turn = max(self.actions_per_turn, default=0)
 
         raw: dict[int, dict[int, str]] = {}
@@ -104,6 +139,7 @@ class DronesRenderer:
         self.paused = False
 
     def moves(self, turn: int) -> list[tuple[int, str, str]]:
+        """Return the drones changing zone or link during a turn."""
         if turn <= 0 or turn > self.max_turn:
             return []
         return [
@@ -114,10 +150,12 @@ class DronesRenderer:
 
     @property
     def finished(self) -> bool:
+        """Tell if the playback reached the last turn."""
         return self.time >= self.max_turn
 
     @property
     def display_turn(self) -> int:
+        """Return the turn currently shown on screen."""
         return min(
             self.max_turn,
             max(0, math.ceil(self.time - 1e-9))
@@ -125,19 +163,23 @@ class DronesRenderer:
 
     @property
     def speed(self) -> float:
+        """Return the current playback speed."""
         return self.speeds[self.speed_index]
 
     def toggle_pause(self) -> None:
+        """Pause or resume, restart the playback if it is finished."""
         if self.finished:
             self.restart()
         else:
             self.paused = not self.paused
 
     def restart(self) -> None:
+        """Go back to turn 0 and play."""
         self.time = 0.0
         self.paused = False
 
     def step(self, delta: int) -> None:
+        """Pause and jump to the previous or next whole turn."""
         if delta > 0:
             target: int = math.floor(self.time + 1e-9) + 1
         else:
@@ -146,10 +188,12 @@ class DronesRenderer:
         self.paused = True
 
     def seek(self, turn: float) -> None:
+        """Pause and jump to the nearest turn, used by the progress bar."""
         self.time = float(max(0, min(self.max_turn, round(turn))))
         self.paused = True
 
     def change_speed(self, delta: int) -> None:
+        """Move to a slower or faster playback speed."""
         self.speed_index = max(
             0,
             min(
@@ -159,12 +203,14 @@ class DronesRenderer:
         )
 
     def update(self, dt: float) -> None:
+        """Advance the timeline by dt seconds unless paused."""
         if self.paused:
             return
         self.anim += dt
         self.time = min(float(self.max_turn), self.time + dt * self.speed)
 
     def anchor(self, name: str) -> tuple[float, float]:
+        """Return the center of a zone or the middle of a link."""
         coords: Any = self.coordinates[name]
         if "-" in name:
             (x1, y1), (x2, y2) = coords
@@ -173,6 +219,7 @@ class DronesRenderer:
         return (x + self.node / 2, y + self.node / 2)
 
     def sprite(self, size: int) -> Any:
+        """Return the drone sprite scaled to size, cached."""
         if size not in self._sprites:
             self._sprites[size] = pygame.transform.scale(
                 self.base_img, (size, size)
@@ -180,6 +227,7 @@ class DronesRenderer:
         return self._sprites[size]
 
     def label(self, drone: int) -> Any:
+        """Return the drone name rendered with a shadow, cached."""
         if drone not in self._labels:
             text: str = f"D{drone}"
             shadow: Any = self.font.render(text, True, (0, 0, 0))
@@ -194,6 +242,7 @@ class DronesRenderer:
         return self._labels[drone]
 
     def draw(self, to_screen: Any) -> None:
+        """Draw every drone between its current and next position."""
         if not self.tracks:
             return
 

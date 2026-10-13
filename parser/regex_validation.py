@@ -1,8 +1,29 @@
+"""
+Validate the map content.
+
+This module validates the map content to follow strict
+syntax rules using regular expressions.
+
+Exported class:
+    RegexValidator: Validate map content using regex.
+"""
 import re
 from typing import Any
 
 
 class RegexValidator:
+    """
+    Validate map content using regex.
+
+    Attributes:
+        map_path: Full map path.
+        nb_drones_regex: Expression nb_drones should follow.
+        hub_regex: Expression hub should follow.
+        connection_regex: Expression connection should follow.
+        metadata_regex: Expression metadata should follow.
+        raw_hubs: Raw hub dictionaries from regex validation.
+        raw_connections: Raw connection dictionaries from regex validation.
+    """
     def __init__(self, map_path: str) -> None:
         self.map_path: str = map_path
         self.nb_drones_regex: str = (
@@ -26,6 +47,7 @@ class RegexValidator:
         self.raw_connections: list[dict[str, Any]] = []
 
     def read_map(self) -> dict[int, str]:
+        """Open and read map file."""
         try:
             with open(self.map_path, "r") as f:
                 file_content: dict[int, str] = {
@@ -50,6 +72,7 @@ class RegexValidator:
         metadata_str: Any,
         metadata: dict[str, Any]
     ) -> None:
+        """Validate metadata against regex expression."""
         metadata_str = metadata_str.split()
         count_color: int = 0
         count_zone: int = 0
@@ -91,6 +114,7 @@ class RegexValidator:
                 )
 
     def validate_file_content(self) -> tuple[Any, ...]:
+        """Validate each file line against regex expression."""
         self.file_content: dict[int, str] = self.read_map()
 
         nb_drone_line_count: int = 0

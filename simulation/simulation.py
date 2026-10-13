@@ -1,3 +1,12 @@
+"""
+Converge point of all packages and where the pipeline starts.
+
+This module call and use all packages together
+from parsing to visual.
+
+Extracted class:
+    Simulation: Run the full pipeline.
+"""
 from models import Map
 from parser import Parser
 from algorithm import MakeGraph, Dijkstra, Astar, Mapf
@@ -6,6 +15,21 @@ from typing import Any
 
 
 class Simulation:
+    """
+    Run the full pipeline.
+
+    Attributes:
+        parser: Map parser.
+        map: Parsed map.
+        graph: Graph of the parsed map.
+        dikstra: Check all nodes distance from goal of
+        the map and used as heuristic value.
+        astar: Check path of a drone from start to end
+        using dijkstra heuristic distance.
+        mapf: Call astar for all drones path.
+        actions_per_turn: Organize all drones path by turn.
+        visual: Visualize all drones path
+    """
     def __init__(self) -> None:
         self.parser: Parser = Parser()
         self.map: Map = self.parser.validate_map()
@@ -34,6 +58,7 @@ class Simulation:
         joint_plan: dict[int, Any],
         reservation_table: list[tuple[Any, ...]],
     ) -> dict[int, Any]:
+        """Organize all drones path by turn."""
         goal_capacity: int = 0
         for drone in joint_plan:
             for source, target, turn in joint_plan[drone]:
@@ -72,6 +97,7 @@ class Simulation:
         joint_plan: dict[int, Any],
         reservation_table: list[tuple[Any, ...]],
     ) -> None:
+        """Show all actions per turn on terminal"""
         self.set_action_per_turn(joint_plan, reservation_table)
         for turn in self.actions_per_turn:
             if turn == 0:
@@ -81,6 +107,7 @@ class Simulation:
             print()
 
     def run(self) -> None:
+        """Call and display each turn on terminal and visual"""
         joint_plan, reservation_table = self.mapf.cooperative_astar(
             self.map.nb_drones
         )

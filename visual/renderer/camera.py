@@ -1,8 +1,30 @@
+"""
+Simulate camera movement on window.
+
+This module simulate camera mouvement on the
+window and graph.
+
+Exported class:
+    Camera: Simulate camera mouvement on window.
+"""
 import pygame
 from typing import Any
 
 
 class Camera:
+    """
+    Simulate camera movement on window.
+
+    Attributes:
+        speed: Camera mouvement speed.
+        window: Pygame window.
+        graph_buffer: Rendered graph buffer.
+        window_w: Window width.
+        window_h: Window height.
+        buffer_w: Graph buffer width.
+        buffer_h: Graph buffer height.
+        origin: Render destination on window.
+    """
     def __init__(self, window: Any, graph_buffer: Any) -> None:
         self.speed: int = 20
         self.window: Any = window
@@ -13,9 +35,11 @@ class Camera:
         self.origin: tuple[int, int] = (0, 0)
 
     def world_to_screen(self, x: float, y: float) -> tuple[float, float]:
+        """Return render destination on window."""
         return (x + self.origin[0], y + self.origin[1])
 
     def present(self, cam_x: int, cam_y: int) -> tuple[int, int]:
+        """Render graph buffer on window."""
         offset_x = max(0, (self.window_w - self.buffer_w) // 2)
         offset_y = max(0, (self.window_h - self.buffer_h) // 2)
 
@@ -34,4 +58,4 @@ class Camera:
             area=pygame.Rect(cam_x, cam_y, visible_w, visible_h)
         )
 
-        return cam_x, cam_y
+        return cam_x, cam_y 
