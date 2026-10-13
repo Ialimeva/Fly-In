@@ -21,7 +21,7 @@ from ..renderer import (
 class Engine:
     """
     Event listener of visual.
-    
+
     Attributes:
         graph_renderer: Graph renderer.
         background_renderer: Background renderer.

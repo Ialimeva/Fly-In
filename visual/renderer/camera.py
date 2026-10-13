@@ -58,4 +58,4 @@ class Camera:
             area=pygame.Rect(cam_x, cam_y, visible_w, visible_h)
         )
 
-        return cam_x, cam_y 
+        return cam_x, cam_y
